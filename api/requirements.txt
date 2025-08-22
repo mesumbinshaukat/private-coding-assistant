@@ -33,10 +33,10 @@ cryptography
 # duckduckgo-search
 
 # # Mathematical computing
-# numpy
-# scipy
-# sympy
-# networkx
+numpy
+scipy
+sympy
+networkx
 
 # # Statistical analysis
 # scikit-learn
