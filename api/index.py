@@ -194,7 +194,7 @@ class handler(BaseHTTPRequestHandler):
         language = request_data.get('language', 'python')
         
         # Use progressive enhancement if available
-        if PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+        if PROGRESSIVE_ENHANCEMENT_AVAILABLE and dependency_manager is not None:
             try:
                 enhanced_result = dependency_manager.get_enhanced_code_generation(prompt, language)
                 if enhanced_result.get("method") != "template_generation":
@@ -381,7 +381,7 @@ if __name__ == "__main__":
         depth = request_data.get('depth', 5)
         
         # Use progressive enhancement if available
-        if PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+        if PROGRESSIVE_ENHANCEMENT_AVAILABLE and dependency_manager is not None:
             try:
                 enhanced_result = dependency_manager.get_enhanced_search(query, depth)
                 if enhanced_result.get("method") != "mock_search":
