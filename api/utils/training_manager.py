@@ -21,6 +21,8 @@ from transformers import (
 from peft import LoraConfig, get_peft_model, TaskType, PeftModel
 from datasets import Dataset, load_dataset
 
+logger = logging.getLogger(__name__)
+
 # For RLHF
 try:
     from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead
@@ -28,8 +30,6 @@ try:
 except ImportError:
     PPOTrainer = None
     logger.warning("TRL not available, RLHF training disabled")
-
-logger = logging.getLogger(__name__)
 
 class TrainingManager:
     """

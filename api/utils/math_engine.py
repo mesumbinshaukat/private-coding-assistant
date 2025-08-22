@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats as stats
 from scipy.optimize import minimize
 from scipy.integrate import quad
-from scipy.misc import derivative
+from scipy.optimize import approx_fprime
 import sympy as sp
 from typing import Dict, List, Any, Optional, Tuple, Callable
 import re
