@@ -1,4 +1,0 @@
-# Minimal requirements for Vercel Python serverless function
-# Only include packages that are actually imported in the code
-requests==2.31.0
-pyjwt==2.8.0
