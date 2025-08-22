@@ -53,9 +53,10 @@ class ProgressiveDependencyManager:
         """Install a specific package"""
         try:
             logger.info(f"Installing package: {package_name}")
+            # Use stdout and stderr instead of capture_output for Python 3.6 compatibility
             subprocess.check_call([
                 sys.executable, "-m", "pip", "install", package_name
-            ], capture_output=True, text=True)
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             self.installed_packages.add(package_name)
             return True
         except subprocess.CalledProcessError as e:
