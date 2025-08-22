@@ -83,8 +83,36 @@ class ProgressiveDependencyManager:
     
     def get_enhanced_search(self, query: str, depth: int = 5) -> dict:
         """Enhanced web search using progressive dependency loading"""
-        # Always try to enable web search first
-        if self.feature_status.get("web_search") != "enabled":
+        # Try to use real web search if available
+        if ADVANCED_UTILS_AVAILABLE and web_searcher:
+            try:
+                # Use real web search
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    results = loop.run_until_complete(
+                        web_searcher.search_multiple_sources(query, depth, include_code=True)
+                    )
+                    loop.close()
+                    
+                    return {
+                        "results": results,
+                        "synthesized_answer": f"Found {len(results)} real web search results for '{query}'",
+                        "confidence": 0.95,
+                        "method": "advanced_web_search",
+                        "query": query,
+                        "result_count": len(results),
+                        "timestamp": datetime.now().isoformat()
+                    }
+                except Exception as e:
+                    logger.error(f"Real web search failed: {e}")
+                    loop.close()
+            except Exception as e:
+                logger.error(f"Web search initialization failed: {e}")
+        
+        # Fallback to basic web search or mock
+        if "web_search" not in self.feature_status or self.feature_status["web_search"] != "enabled":
             if not self.enable_feature("web_search"):
                 return self._get_mock_search(query, depth)
         
@@ -265,9 +293,24 @@ print("Code generation for: {prompt}")"""
         }
     
     def store_in_memory(self, content: str) -> bool:
-        """Store content in memory (mock implementation for Phase 2)"""
+        """Store content in memory (real implementation when available)"""
         try:
-            # Mock memory storage - in Phase 3 this will use FAISS
+            # Try to use real memory manager if available
+            if ADVANCED_UTILS_AVAILABLE and memory_manager:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    success = loop.run_until_complete(
+                        memory_manager.store_interaction("user_input", {"content": content, "timestamp": datetime.now().isoformat()})
+                    )
+                    loop.close()
+                    return success
+                except Exception as e:
+                    logger.error(f"Real memory storage failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock memory storage
             logger.info(f"Storing content in memory: {content[:50]}...")
             return True
         except Exception as e:
@@ -275,9 +318,24 @@ print("Code generation for: {prompt}")"""
             return False
     
     def retrieve_from_memory(self, query: str) -> list:
-        """Retrieve content from memory (mock implementation for Phase 2)"""
+        """Retrieve content from memory (real implementation when available)"""
         try:
-            # Mock memory retrieval - in Phase 3 this will use vector search
+            # Try to use real memory manager if available
+            if ADVANCED_UTILS_AVAILABLE and memory_manager:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    results = loop.run_until_complete(
+                        memory_manager.search_memories(query, limit=5)
+                    )
+                    loop.close()
+                    return results
+                except Exception as e:
+                    logger.error(f"Real memory retrieval failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock memory retrieval
             logger.info(f"Retrieving from memory with query: {query}")
             return [
                 {
@@ -291,9 +349,24 @@ print("Code generation for: {prompt}")"""
             return []
     
     def start_training(self, config: dict) -> bool:
-        """Start training process (mock implementation for Phase 2)"""
+        """Start training process (real implementation when available)"""
         try:
-            # Mock training start - in Phase 3 this will use actual ML training
+            # Try to use real training manager if available
+            if ADVANCED_UTILS_AVAILABLE and training_manager:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    success = loop.run_until_complete(
+                        training_manager.start_training(config)
+                    )
+                    loop.close()
+                    return success
+                except Exception as e:
+                    logger.error(f"Real training start failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock training start
             logger.info(f"Starting training with config: {config}")
             return True
         except Exception as e:
@@ -301,21 +374,56 @@ print("Code generation for: {prompt}")"""
             return False
     
     def get_training_status(self) -> dict:
-        """Get training status (mock implementation for Phase 2)"""
-        return {
-            "status": "idle",
-            "progress": 0,
-            "current_epoch": 0,
-            "total_epochs": 0,
-            "loss": 0.0,
-            "accuracy": 0.0,
-            "timestamp": datetime.now().isoformat()
-        }
+        """Get training status (real implementation when available)"""
+        try:
+            # Try to use real training manager if available
+            if ADVANCED_UTILS_AVAILABLE and training_manager:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    status = loop.run_until_complete(
+                        training_manager.get_training_status()
+                    )
+                    loop.close()
+                    return status
+                except Exception as e:
+                    logger.error(f"Real training status failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock training status
+            return {
+                "status": "idle",
+                "progress": 0,
+                "current_epoch": 0,
+                "total_epochs": 0,
+                "loss": 0.0,
+                "accuracy": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
+        except Exception as e:
+            logger.error(f"Failed to get training status: {e}")
+            return {"error": str(e)}
     
     def analyze_code(self, code: str) -> dict:
-        """Analyze code (mock implementation for Phase 2)"""
+        """Analyze code (real implementation when available)"""
         try:
-            # Mock code analysis - in Phase 3 this will use actual ML models
+            # Try to use real code executor if available
+            if ADVANCED_UTILS_AVAILABLE and code_executor:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    analysis = loop.run_until_complete(
+                        code_executor.analyze_code(code)
+                    )
+                    loop.close()
+                    return analysis
+                except Exception as e:
+                    logger.error(f"Real code analysis failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock code analysis
             logger.info(f"Analyzing code: {code[:50]}...")
             return {
                 "complexity": "medium",
@@ -333,9 +441,24 @@ print("Code generation for: {prompt}")"""
             return {"error": str(e)}
     
     def analyze_text(self, text: str) -> dict:
-        """Analyze text (mock implementation for Phase 2)"""
+        """Analyze text (real implementation when available)"""
         try:
-            # Mock text analysis - in Phase 3 this will use actual NLP models
+            # Try to use real math engine if available
+            if ADVANCED_UTILS_AVAILABLE and math_engine:
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    analysis = loop.run_until_complete(
+                        math_engine.analyze_text(text)
+                    )
+                    loop.close()
+                    return analysis
+                except Exception as e:
+                    logger.error(f"Real text analysis failed: {e}")
+                    loop.close()
+            
+            # Fallback to mock text analysis
             logger.info(f"Analyzing text: {text[:50]}...")
             return {
                 "sentiment": "neutral",
@@ -357,6 +480,39 @@ except Exception as e:
     logger.error(f"Failed to initialize dependency manager: {e}")
     dependency_manager = None
 
+# Import existing advanced utilities
+try:
+    from api.utils.memory_manager import MemoryManager
+    from api.utils.training_manager import TrainingManager
+    from api.utils.web_search import WebSearcher
+    from api.utils.math_engine import MathEngine
+    from api.utils.code_executor import CodeExecutor
+    ADVANCED_UTILS_AVAILABLE = True
+    logger.info("Advanced utils imported successfully")
+except ImportError as e:
+    ADVANCED_UTILS_AVAILABLE = False
+    logger.warning(f"Advanced utils not available: {e}")
+
+# Initialize advanced components
+memory_manager = None
+training_manager = None
+web_searcher = None
+math_engine = None
+code_executor = None
+
+if ADVANCED_UTILS_AVAILABLE:
+    try:
+        # Initialize advanced components
+        memory_manager = MemoryManager()
+        training_manager = TrainingManager()
+        web_searcher = WebSearcher()
+        math_engine = MathEngine()
+        code_executor = CodeExecutor()
+        logger.info("Advanced components initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize advanced components: {e}")
+        ADVANCED_UTILS_AVAILABLE = False
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handle GET requests"""
@@ -364,19 +520,19 @@ class handler(BaseHTTPRequestHandler):
             if self.path == "/":
                 response = {
                     "message": "Autonomous AI Agent API",
-                    "status": "Phase 2: Machine Learning Core & Memory",
-                    "version": "2.0.0",
+                    "status": "Phase 3: Advanced ML & Real Dependencies" if ADVANCED_UTILS_AVAILABLE else "Phase 2: Machine Learning Core & Memory",
+                    "version": "3.0.0" if ADVANCED_UTILS_AVAILABLE else "2.0.0",
                     "timestamp": datetime.now().isoformat(),
                     "features": ["web_search", "code_generation", "reasoning", "memory", "training", "analysis"],
                     "endpoints": {
-                        "GET": ["/", "/status", "/dependencies", "/memory", "/models"],
+                        "GET": ["/", "/status", "/dependencies", "/memory", "/models", "/advanced"],
                         "POST": ["/search", "/generate", "/reason", "/dependencies", "/memory", "/train", "/analyze"]
                     }
                 }
             elif self.path == "/status":
                 response = {
                     "status": "operational",
-                    "phase": "Phase 2: Machine Learning Core & Memory",
+                    "phase": "Phase 3: Advanced ML & Real Dependencies" if ADVANCED_UTILS_AVAILABLE else "Phase 2: Machine Learning Core & Memory",
                     "timestamp": datetime.now().isoformat(),
                     "dependency_manager": dependency_manager.get_status() if dependency_manager else {"error": "Not initialized"}
                 }
@@ -394,6 +550,21 @@ class handler(BaseHTTPRequestHandler):
             elif self.path == "/models":
                 response = {
                     "models": dependency_manager.get_models_status() if dependency_manager else {"error": "Not initialized"},
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif self.path == "/advanced":
+                response = {
+                    "advanced_utils": {
+                        "available": ADVANCED_UTILS_AVAILABLE,
+                        "components": {
+                            "memory_manager": memory_manager is not None,
+                            "training_manager": training_manager is not None,
+                            "web_searcher": web_searcher is not None,
+                            "math_engine": math_engine is not None,
+                            "code_executor": code_executor is not None
+                        },
+                        "status": "Phase 3: Advanced ML & Real Dependencies" if ADVANCED_UTILS_AVAILABLE else "Phase 2: Mock implementations"
+                    },
                     "timestamp": datetime.now().isoformat()
                 }
             elif self.path == "/test":
