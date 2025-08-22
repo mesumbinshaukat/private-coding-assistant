@@ -1,3 +1,2 @@
-# Essential packages for Vercel Python serverless function
-requests==2.31.0
-pyjwt==2.8.0
+# No external dependencies for now - using only Python standard library
+# This ensures Vercel deployment works without package conflicts
