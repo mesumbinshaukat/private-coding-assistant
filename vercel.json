@@ -18,7 +18,40 @@
   ],
   "functions": {
     "api/**": {
-      "excludeFiles": "{.next,*.cache,node_modules,public,app,desktop-app,scripts,tests,examples,docs,*.md,*.txt,*.json,*.yml,*.yaml,*.log,*.pyc,__pycache__,.git,.github,.vscode,.idea,venv,env,.env,*.bat,*.sh,*.ps1}/**"
+      "excludeFiles": [
+        ".next/**",
+        "*.cache/**",
+        "node_modules/**",
+        "public/**",
+        "app/**",
+        "desktop-app/**",
+        "scripts/**",
+        "tests/**",
+        "examples/**",
+        "docs/**",
+        "*.md",
+        "*.txt",
+        "*.log",
+        "*.pyc",
+        "__pycache__/**",
+        ".git/**",
+        ".github/**",
+        ".vscode/**",
+        ".idea/**",
+        "venv/**",
+        "env/**",
+        ".env*",
+        "*.bat",
+        "*.sh",
+        "*.ps1",
+        "models/**",
+        "training/**",
+        "memory/**",
+        "logs/**",
+        "requirements_full.txt",
+        "requirements_phases.json",
+        "install_dependencies.py"
+      ]
     }
   }
 }
