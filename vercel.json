@@ -18,48 +18,7 @@
   ],
   "functions": {
     "api/**": {
-      "excludeFiles": [
-        ".next/**",
-        "*.cache/**",
-        "node_modules/**",
-        "public/**",
-        "app/**",
-        "desktop-app/**",
-        "scripts/**",
-        "tests/**",
-        "examples/**",
-        "docs/**",
-        "*.md",
-        "*.txt",
-        "*.log",
-        "*.pyc",
-        "__pycache__/**",
-        ".git/**",
-        ".github/**",
-        ".vscode/**",
-        ".idea/**",
-        "venv/**",
-        "env/**",
-        ".env*",
-        "*.bat",
-        "*.sh",
-        "*.ps1",
-        "models/**",
-        "training/**",
-        "memory/**",
-        "logs/**",
-        "requirements_full.txt",
-        "requirements_phases.json",
-        "install_dependencies.py",
-        "api/agent_core.py",
-        "api/dependency_manager.py",
-        "api/index_full.py",
-        "api/index_vercel.py",
-        "api/requirements_backup.txt",
-        "api/requirements_full.txt",
-        "api/requirements_minimal.txt",
-        "api/utils/**"
-      ]
+      "excludeFiles": ".next/** *.cache/** node_modules/** public/** app/** desktop-app/** scripts/** tests/** examples/** docs/** *.md *.txt *.log *.pyc __pycache__/** .git/** .github/** .vscode/** .idea/** venv/** env/** .venv/** build/** dist/** *.egg-info/** *.csv *.json *.xml *.zip *.tar.gz *_backup.* *_full.* *_vercel.* models/** training/** memory/** logs/** requirements_full.txt requirements_phases.json install_dependencies.py agent_core.py dependency_manager.py index_full.py index_vercel.py"
     }
   }
 }
