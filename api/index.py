@@ -9,20 +9,21 @@ import json
 from datetime import datetime
 from urllib.parse import urlparse
 
-# Import progressive dependency manager (conditional)
+# Progressive enhancement system (temporarily disabled for stability)
 PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
 dependency_manager = None
 
-try:
-    from dependency_manager import dependency_manager
-    PROGRESSIVE_ENHANCEMENT_AVAILABLE = True
-    print("Progressive enhancement system loaded successfully")
-except ImportError as e:
-    print(f"Progressive enhancement not available: {e}")
-    PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
-except Exception as e:
-    print(f"Error loading progressive enhancement: {e}")
-    PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
+# TODO: Re-enable progressive enhancement once basic system is stable
+# try:
+#     from dependency_manager import dependency_manager
+#     PROGRESSIVE_ENHANCEMENT_AVAILABLE = True
+#     print("Progressive enhancement system loaded successfully")
+# except ImportError as e:
+#     print(f"Progressive enhancement not available: {e}")
+#     PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
+# except Exception as e:
+#     print(f"Error loading progressive enhancement: {e}")
+#     PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
 
 # Configuration
 SECRET_KEY = "autonomous-ai-agent-secret-key-2024"
