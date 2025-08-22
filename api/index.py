@@ -18,10 +18,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
 
-from agent_core import AutonomousAgent
-from utils.auth import verify_token
-from utils.rate_limiter import RateLimiter
-from utils.logger import setup_logger
+from api.agent_core import AutonomousAgent
+from api.utils.auth import verify_token
+from api.utils.rate_limiter import RateLimiter
+from api.utils.logger import setup_logger
 
 # Setup logging
 logger = setup_logger()

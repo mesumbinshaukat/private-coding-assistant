@@ -13,12 +13,12 @@ from datetime import datetime
 import logging
 from pathlib import Path
 
-# LangChain imports
-from langchain.llms import HuggingFacePipeline
+# LangChain imports - Updated for current version
+from langchain_community.llms import HuggingFacePipeline
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
-from langchain.schema import BaseOutputParser
+from langchain_core.output_parsers import BaseOutputParser
 
 # Transformers and ML imports
 from transformers import (
@@ -31,11 +31,11 @@ import sentence_transformers
 import faiss
 
 # Utility imports
-from utils.web_search import WebSearcher
-from utils.code_executor import CodeExecutor
-from utils.math_engine import MathEngine
-from utils.memory_manager import MemoryManager
-from utils.training_manager import TrainingManager
+from api.utils.web_search import WebSearcher
+from api.utils.code_executor import CodeExecutor
+from api.utils.math_engine import MathEngine
+from api.utils.memory_manager import MemoryManager
+from api.utils.training_manager import TrainingManager
 
 logger = logging.getLogger(__name__)
 
