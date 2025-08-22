@@ -135,44 +135,48 @@ class ProgressiveDependencyManager:
                 return self._get_mock_search(query, depth)
         
         try:
-            import requests
-            from bs4 import BeautifulSoup
+            # Try to import modules safely
+            requests = self.load_module_safely("requests")
+            beautifulsoup4 = self.load_module_safely("bs4")
             
-            # Real web search implementation
-            search_results = []
-            
-            # DuckDuckGo search (no API key required)
-            search_url = f"https://duckduckgo.com/html/?q={query}"
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
-            
-            response = requests.get(search_url, headers=headers, timeout=10)
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                results = soup.find_all('div', class_='result')[:depth]
+            if requests and beautifulsoup4:
+                # Real web search implementation
+                search_results = []
                 
-                for result in results:
-                    title_elem = result.find('a', class_='result__a')
-                    snippet_elem = result.find('div', class_='result__snippet')
+                # DuckDuckGo search (no API key required)
+                search_url = f"https://duckduckgo.com/html/?q={query}"
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+                
+                response = requests.get(search_url, headers=headers, timeout=10)
+                if response.status_code == 200:
+                    soup = beautifulsoup4.BeautifulSoup(response.text, 'html.parser')
+                    results = soup.find_all('div', class_='result')[:depth]
                     
-                    if title_elem and snippet_elem:
-                        search_results.append({
-                            "title": title_elem.get_text(strip=True),
-                            "snippet": snippet_elem.get_text(strip=True),
-                            "url": title_elem.get('href', ''),
-                            "type": "web_search"
-                        })
-            
-            return {
-                "results": search_results,
-                "synthesized_answer": f"Found {len(search_results)} real web search results for '{query}'",
-                "confidence": 0.9,
-                "method": "enhanced_web_search",
-                "query": query,
-                "result_count": len(search_results),
-                "timestamp": self._get_timestamp()
-            }
+                    for result in results:
+                        title_elem = result.find('a', class_='result__a')
+                        snippet_elem = result.find('div', class_='result__snippet')
+                        
+                        if title_elem and snippet_elem:
+                            search_results.append({
+                                "title": title_elem.get_text(strip=True),
+                                "snippet": snippet_elem.get_text(strip=True),
+                                "url": title_elem.get('href', ''),
+                                "type": "web_search"
+                            })
+                
+                return {
+                    "results": search_results,
+                    "synthesized_answer": f"Found {len(search_results)} real web search results for '{query}'",
+                    "confidence": 0.9,
+                    "method": "enhanced_web_search",
+                    "query": query,
+                    "result_count": len(search_results),
+                    "timestamp": self._get_timestamp()
+                }
+            else:
+                return self._get_mock_search(query, depth)
             
         except Exception as e:
             logger.error(f"Enhanced search failed: {str(e)}")
