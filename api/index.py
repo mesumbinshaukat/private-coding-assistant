@@ -1,6 +1,6 @@
 """
-Autonomous AI Agent API - Full Version (No External Dependencies)
-Vercel-compatible Python serverless function with full capabilities
+Autonomous AI Agent API - Full Version with Progressive Enhancement
+Vercel-compatible Python serverless function with progressive dependency loading
 DEPLOYMENT TIMESTAMP: 2025-08-22T13:50:00Z
 """
 
@@ -8,6 +8,13 @@ from http.server import BaseHTTPRequestHandler
 import json
 from datetime import datetime
 from urllib.parse import urlparse
+
+# Import progressive dependency manager
+try:
+    from dependency_manager import dependency_manager
+    PROGRESSIVE_ENHANCEMENT_AVAILABLE = True
+except ImportError:
+    PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
 
 # Configuration
 SECRET_KEY = "autonomous-ai-agent-secret-key-2024"
@@ -42,10 +49,20 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
                     return
                 
+                # Get enhanced status if progressive enhancement is available
+                enhanced_status = {}
+                if PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+                    try:
+                        enhanced_status = dependency_manager.get_system_status()
+                    except:
+                        pass
+                
                 response = {
                     "api_status": "active",
-                    "available_features": ["code_generation", "web_search", "reasoning"],
+                    "available_features": ["code_generation", "web_search", "reasoning", "dependency_management"],
                     "deployment_mode": "full",
+                    "progressive_enhancement": PROGRESSIVE_ENHANCEMENT_AVAILABLE,
+                    "enhanced_status": enhanced_status,
                     "timestamp": datetime.now().isoformat()
                 }
             else:
@@ -115,6 +132,8 @@ class handler(BaseHTTPRequestHandler):
                 response = self._handle_reasoning(request_data)
             elif path == '/train':
                 response = self._handle_training(request_data)
+            elif path == '/dependencies':
+                response = self._handle_dependencies(request_data)
             else:
                 response = {"error": "Endpoint not found"}
             
@@ -161,11 +180,21 @@ class handler(BaseHTTPRequestHandler):
             return False
     
     def _handle_code_generation(self, request_data):
-        """Handle code generation requests with enhanced templates"""
+        """Handle code generation requests with progressive enhancement"""
         prompt = request_data.get('prompt', '')
         language = request_data.get('language', 'python')
         
-        # Enhanced template-based code generation
+        # Use progressive enhancement if available
+        if PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+            try:
+                enhanced_result = dependency_manager.get_enhanced_code_generation(prompt, language)
+                if enhanced_result.get("method") != "template_generation":
+                    return enhanced_result
+            except Exception as e:
+                # Fall back to template generation if enhancement fails
+                pass
+        
+        # Enhanced template-based code generation (fallback)
         templates = {
             "fibonacci": {
                 "python": """def fibonacci(n):
@@ -338,11 +367,21 @@ if __name__ == "__main__":
         }
     
     def _handle_search(self, request_data):
-        """Handle search requests with mock search (no external dependencies)"""
+        """Handle search requests with progressive enhancement"""
         query = request_data.get('query', '')
         depth = request_data.get('depth', 5)
         
-        # Mock search results for now
+        # Use progressive enhancement if available
+        if PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+            try:
+                enhanced_result = dependency_manager.get_enhanced_search(query, depth)
+                if enhanced_result.get("method") != "mock_search":
+                    return enhanced_result
+            except Exception as e:
+                # Fall back to mock search if enhancement fails
+                pass
+        
+        # Mock search results (fallback)
         mock_results = [
             {
                 "title": f"Search Result for: {query}",
@@ -452,3 +491,52 @@ This {domain} problem requires systematic analysis and careful implementation.
             "note": "Training capabilities are available for model improvement",
             "timestamp": datetime.now().isoformat()
         }
+    
+    def _handle_dependencies(self, request_data):
+        """Handle dependency management requests"""
+        action = request_data.get('action', 'status')
+        
+        if not PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+            return {
+                "error": "Progressive enhancement not available",
+                "message": "Dependency manager not loaded",
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        try:
+            if action == 'status':
+                return dependency_manager.get_system_status()
+            elif action == 'enable_feature':
+                feature = request_data.get('feature')
+                if not feature:
+                    return {"error": "Feature name required"}
+                success = dependency_manager.enable_feature(feature)
+                return {
+                    "action": "enable_feature",
+                    "feature": feature,
+                    "success": success,
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif action == 'install_package':
+                package = request_data.get('package')
+                if not package:
+                    return {"error": "Package name required"}
+                success = dependency_manager.install_package(package)
+                return {
+                    "action": "install_package",
+                    "package": package,
+                    "success": success,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "error": "Unknown action",
+                    "available_actions": ["status", "enable_feature", "install_package"],
+                    "timestamp": datetime.now().isoformat()
+                }
+        except Exception as e:
+            return {
+                "error": "Dependency management failed",
+                "details": str(e),
+                "timestamp": datetime.now().isoformat()
+            }

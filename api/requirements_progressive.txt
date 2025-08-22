@@ -1,0 +1,56 @@
+# Progressive Requirements for Autonomous AI Agent
+# Install these in phases to avoid Vercel build issues
+
+# Phase 1: Basic Web and Search (Lightweight)
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Phase 2: Machine Learning Core (Medium)
+torch==2.1.0+cpu --index-url https://download.pytorch.org/whl/cpu
+transformers==4.35.2
+tokenizers==0.15.0
+numpy==1.24.4
+
+# Phase 3: Advanced AI Features (Heavy)
+sentence-transformers==2.2.2
+faiss-cpu==1.7.4
+langchain==0.0.340
+langchain-community==0.0.6
+
+# Phase 4: Data Processing and Analysis
+pandas==2.1.4
+scipy==1.11.4
+scikit-learn==1.3.2
+networkx==3.2.1
+
+# Phase 5: Natural Language Processing
+nltk==3.8.1
+spacy==3.7.2
+textblob==0.17.1
+
+# Phase 6: Code Analysis and Quality
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Phase 7: Advanced Authentication and Security
+pyjwt==2.8.0
+cryptography==41.0.7
+passlib==1.7.4
+
+# Phase 8: Training and Fine-tuning
+datasets==2.14.7
+peft==0.6.2
+accelerate==0.24.1
+bitsandbytes==0.41.1
+
+# Phase 9: Scientific Computing
+sympy==1.12
+matplotlib==3.8.2
+seaborn==0.13.0
+
+# Phase 10: Advanced Vector Operations
+chromadb==0.4.18
+pinecone-client==2.2.4
+qdrant-client==1.6.9
