@@ -1,0 +1,62 @@
+# Core FastAPI and server dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# Authentication and security
+pyjwt
+cryptography
+
+# AI and ML core libraries - CPU only for Vercel compatibility
+torch --index-url https://download.pytorch.org/whl/cpu
+transformers
+datasets
+tokenizers
+
+# LangChain for orchestration
+langchain
+langchain-community
+
+# Training and fine-tuning
+peft
+accelerate
+
+# Vector search and embeddings
+faiss-cpu
+sentence-transformers
+
+# Web scraping and search
+beautifulsoup4
+requests
+aiohttp
+duckduckgo-search
+
+# Mathematical computing
+numpy
+scipy
+sympy
+networkx
+
+# Statistical analysis
+scikit-learn
+pandas
+
+# Natural language processing
+nltk
+
+# Development and testing
+pytest
+pytest-asyncio
+
+# Utilities
+python-dotenv
+
+# Data serialization
+orjson
+
+# Logging
+structlog
+
+# HTTP client
+httpx

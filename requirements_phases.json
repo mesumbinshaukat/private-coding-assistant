@@ -1,0 +1,99 @@
+{
+  "deployment_strategy": "progressive_installation",
+  "description": "Dependencies are installed in phases to avoid OOM during deployment",
+  
+  "phase_1_core": {
+    "description": "Essential dependencies for basic API functionality",
+    "install_during": "deployment",
+    "packages": [
+      "fastapi==0.104.1",
+      "uvicorn==0.24.0",
+      "pydantic==2.5.2",
+      "pyjwt==2.8.0",
+      "requests==2.31.0",
+      "python-dotenv==1.0.0",
+      "importlib-metadata==6.8.0"
+    ]
+  },
+  
+  "phase_2_ai_lightweight": {
+    "description": "Basic utilities and web scraping capabilities",
+    "install_during": "post_deployment",
+    "estimated_memory": "100MB",
+    "packages": [
+      "numpy==1.24.4",
+      "beautifulsoup4==4.12.2", 
+      "aiohttp==3.9.1",
+      "duckduckgo-search==3.9.6"
+    ]
+  },
+  
+  "phase_3_ai_core": {
+    "description": "Core AI libraries for text generation",
+    "install_during": "post_deployment", 
+    "estimated_memory": "800MB",
+    "packages": [
+      "torch==2.1.0+cpu --index-url https://download.pytorch.org/whl/cpu",
+      "transformers==4.35.2",
+      "tokenizers==0.15.0"
+    ]
+  },
+  
+  "phase_4_ai_advanced": {
+    "description": "Advanced AI capabilities and vector search",
+    "install_during": "post_deployment",
+    "estimated_memory": "300MB", 
+    "packages": [
+      "langchain==0.0.340",
+      "langchain-community==0.0.6",
+      "sentence-transformers==2.2.2",
+      "faiss-cpu==1.7.4"
+    ]
+  },
+  
+  "phase_5_training": {
+    "description": "Model training and fine-tuning capabilities",
+    "install_during": "post_deployment",
+    "estimated_memory": "200MB",
+    "packages": [
+      "datasets==2.14.7",
+      "peft==0.6.2",
+      "accelerate==0.24.1"
+    ]
+  },
+  
+  "phase_6_math_science": {
+    "description": "Scientific computing and mathematical analysis",
+    "install_during": "post_deployment",
+    "estimated_memory": "250MB",
+    "packages": [
+      "scipy==1.11.4",
+      "sympy==1.12", 
+      "networkx==3.2.1",
+      "scikit-learn==1.3.2",
+      "pandas==2.1.4",
+      "nltk==3.8.1"
+    ]
+  },
+  
+  "installation_instructions": {
+    "automatic": "Set installation_mode to 'auto' and dependencies will install progressively",
+    "manual": "Use POST /dependencies/install with specific phase names",
+    "api_endpoints": {
+      "status": "GET /dependencies/status",
+      "install_next": "POST /dependencies/install", 
+      "install_phase": "POST /dependencies/install with {\"phase\": \"phase_name\"}",
+      "install_package": "POST /dependencies/install with {\"package\": \"package_name\"}",
+      "retry_failed": "POST /dependencies/retry"
+    }
+  },
+  
+  "feature_availability": {
+    "phase_1_core": ["basic_api", "authentication", "fallback_templates"],
+    "phase_2_ai_lightweight": ["web_search", "enhanced_templates"],
+    "phase_3_ai_core": ["ai_code_generation", "text_processing"],
+    "phase_4_ai_advanced": ["advanced_reasoning", "vector_search", "chain_of_thought"],
+    "phase_5_training": ["self_training", "model_fine_tuning", "rlhf"],
+    "phase_6_math_science": ["mathematical_reasoning", "data_analysis", "scientific_computing"]
+  }
+}
