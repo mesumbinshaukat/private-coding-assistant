@@ -33,40 +33,21 @@ class ProgressiveDependencyManager:
             "memory", "training", "advanced_ml"
         }
         
-        # Check what's already available
-        self._check_installed_packages()
-    
-    def _check_installed_packages(self):
-        """Check which packages are already installed"""
         # Initialize all features as not available initially
         for feature in self.available_features:
             self.feature_status[feature] = "not_installed"
         
-        # Check packages safely
+        # Don't check packages during initialization - do it on demand
+        logger.info("Dependency manager initialized - packages will be checked on demand")
+    
+    def _check_package_available(self, package_name: str) -> bool:
+        """Check if a specific package is available"""
         try:
-            import requests
-            self.installed_packages.add("requests")
-            logger.info("requests package available")
+            import importlib
+            importlib.import_module(package_name)
+            return True
         except ImportError:
-            logger.info("requests package not available")
-        
-        try:
-            import bs4
-            self.installed_packages.add("beautifulsoup4")
-            logger.info("beautifulsoup4 package available")
-        except ImportError:
-            logger.info("beautifulsoup4 package not available")
-        
-        try:
-            import lxml
-            self.installed_packages.add("lxml")
-            logger.info("lxml package available")
-        except ImportError:
-            logger.info("lxml package not available")
-        
-        # Update feature status based on available packages
-        if "requests" in self.installed_packages and "beautifulsoup4" in self.installed_packages:
-            self.feature_status["web_search"] = "available"
+            return False
     
     def install_package(self, package_name: str) -> bool:
         """Install a specific package"""
@@ -89,9 +70,11 @@ class ProgressiveDependencyManager:
         if feature_name == "web_search":
             required_packages = ["requests", "beautifulsoup4", "lxml"]
             for package in required_packages:
-                if package not in self.installed_packages:
+                if not self._check_package_available(package):
                     if not self.install_package(package):
                         return False
+                else:
+                    self.installed_packages.add(package)
             self.feature_status[feature_name] = "enabled"
             return True
         
