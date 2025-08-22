@@ -1,14 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+  "functions": {
+    "api/index.py": {
+      "runtime": "@vercel/python",
+      "maxDuration": 30,
+      "memory": 512
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -22,12 +20,8 @@
   "env": {
     "SECRET_KEY": "autonomous-ai-agent-secret-key-2024",
     "PYTHONPATH": "api",
-    "MODEL_NAME": "distilgpt2"
-  },
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 300
-    }
+    "MODEL_NAME": "distilgpt2",
+    "LOG_LEVEL": "INFO"
   },
   "headers": [
     {
