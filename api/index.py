@@ -182,19 +182,19 @@ class handler(BaseHTTPRequestHandler):
             if self.path == "/":
                 response = {
                     "message": "Autonomous AI Agent API",
-                    "status": "Phase 1: Basic Web and Search",
-                    "version": "1.0.0",
+                    "status": "Phase 2: Machine Learning Core & Memory",
+                    "version": "2.0.0",
                     "timestamp": datetime.now().isoformat(),
-                    "features": ["web_search", "code_generation", "reasoning"],
+                    "features": ["web_search", "code_generation", "reasoning", "memory", "training", "analysis"],
                     "endpoints": {
-                        "GET": ["/", "/status", "/dependencies"],
-                        "POST": ["/search", "/generate", "/reason"]
+                        "GET": ["/", "/status", "/dependencies", "/memory", "/models"],
+                        "POST": ["/search", "/generate", "/reason", "/dependencies", "/memory", "/train", "/analyze"]
                     }
                 }
             elif self.path == "/status":
                 response = {
                     "status": "operational",
-                    "phase": "Phase 1: Basic Web and Search",
+                    "phase": "Phase 2: Machine Learning Core & Memory",
                     "timestamp": datetime.now().isoformat(),
                     "dependency_manager": dependency_manager.get_status() if dependency_manager else {"error": "Not initialized"}
                 }
@@ -202,6 +202,16 @@ class handler(BaseHTTPRequestHandler):
                 response = {
                     "dependencies": dependency_manager.get_status() if dependency_manager else {"error": "Not initialized"},
                     "installation_guide": "Use POST /dependencies to install packages",
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif self.path == "/memory":
+                response = {
+                    "memory": dependency_manager.get_memory_status() if dependency_manager else {"error": "Not initialized"},
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif self.path == "/models":
+                response = {
+                    "models": dependency_manager.get_models_status() if dependency_manager else {"error": "Not initialized"},
                     "timestamp": datetime.now().isoformat()
                 }
             elif self.path == "/test":
@@ -257,6 +267,12 @@ class handler(BaseHTTPRequestHandler):
                 response = self._handle_reasoning(request_data)
             elif self.path == "/dependencies":
                 response = self._handle_dependencies(request_data)
+            elif self.path == "/memory":
+                response = self._handle_memory(request_data)
+            elif self.path == "/train":
+                response = self._handle_training(request_data)
+            elif self.path == "/analyze":
+                response = self._handle_analysis(request_data)
             elif self.path == "/test":
                 response = self._handle_test(request_data)
             else:
@@ -431,6 +447,134 @@ print("Code generation for: {prompt}")"""
             return {
                 "action": "status",
                 "status": dependency_manager.get_status(),
+                "timestamp": datetime.now().isoformat()
+            }
+    
+    def _handle_memory(self, request_data: dict) -> dict:
+        """Handle memory operations"""
+        if not dependency_manager:
+            return {
+                "error": "Dependency manager not available",
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        action = request_data.get('action', 'status')
+        
+        if action == 'store':
+            content = request_data.get('content')
+            if content:
+                success = dependency_manager.store_in_memory(content)
+                return {
+                    "action": "store",
+                    "success": success,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "error": "Content required for store action",
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        elif action == 'retrieve':
+            query = request_data.get('query')
+            if query:
+                results = dependency_manager.retrieve_from_memory(query)
+                return {
+                    "action": "retrieve",
+                    "results": results,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "error": "Query required for retrieve action",
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        else:  # Default to status
+            return {
+                "action": "status",
+                "memory": dependency_manager.get_memory_status(),
+                "timestamp": datetime.now().isoformat()
+            }
+    
+    def _handle_training(self, request_data: dict) -> dict:
+        """Handle training operations"""
+        if not dependency_manager:
+            return {
+                "error": "Dependency manager not available",
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        action = request_data.get('action', 'status')
+        
+        if action == 'start_training':
+            training_config = request_data.get('config', {})
+            success = dependency_manager.start_training(training_config)
+            return {
+                "action": "start_training",
+                "success": success,
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        elif action == 'training_status':
+            status = dependency_manager.get_training_status()
+            return {
+                "action": "training_status",
+                "status": status,
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        else:  # Default to status
+            return {
+                "action": "status",
+                "training": dependency_manager.get_training_status(),
+                "timestamp": datetime.now().isoformat()
+            }
+    
+    def _handle_analysis(self, request_data: dict) -> dict:
+        """Handle analysis operations"""
+        if not dependency_manager:
+            return {
+                "error": "Dependency manager not available",
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        action = request_data.get('action', 'status')
+        
+        if action == 'analyze_code':
+            code = request_data.get('code')
+            if code:
+                analysis = dependency_manager.analyze_code(code)
+                return {
+                    "action": "analyze_code",
+                    "analysis": analysis,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "error": "Code required for analyze_code action",
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        elif action == 'analyze_text':
+            text = request_data.get('text')
+            if text:
+                analysis = dependency_manager.analyze_text(text)
+                return {
+                    "action": "analyze_text",
+                    "analysis": analysis,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "error": "Text required for analyze_text action",
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        else:  # Default to status
+            return {
+                "action": "status",
+                "analysis": "Available analysis methods: analyze_code, analyze_text",
                 "timestamp": datetime.now().isoformat()
             }
     
