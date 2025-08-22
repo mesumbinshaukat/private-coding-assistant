@@ -1,9 +1,4 @@
-# Core dependencies with specific versions for Vercel compatibility
-fastapi==0.104.1
-uvicorn==0.24.0
-pydantic==2.5.2
-pyjwt==2.8.0
+# Minimal requirements for Vercel Python serverless function
+# Only include packages that are actually imported in the code
 requests==2.31.0
-
-# Additional utilities that work well with Vercel
-python-multipart==0.0.6
+pyjwt==2.8.0
