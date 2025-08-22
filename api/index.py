@@ -106,9 +106,16 @@ class ProgressiveDependencyManager:
         
         try:
             # Dynamic import after ensuring packages are available
-            import requests
-            import bs4
-            from bs4 import BeautifulSoup
+            # Use importlib for safer dynamic imports
+            import importlib
+            
+            try:
+                requests = importlib.import_module("requests")
+                bs4 = importlib.import_module("bs4")
+                BeautifulSoup = getattr(bs4, "BeautifulSoup")
+            except ImportError as e:
+                logger.error(f"Failed to import required modules: {e}")
+                return self._get_mock_search(query, depth)
             
             # Real web search implementation
             search_results = []
@@ -213,6 +220,8 @@ class handler(BaseHTTPRequestHandler):
                     "installation_guide": "Use POST /dependencies to install packages",
                     "timestamp": datetime.now().isoformat()
                 }
+            elif self.path == "/test":
+                response = self._handle_test(request_data)
             else:
                 response = {
                     "error": "Endpoint not found",
@@ -261,6 +270,8 @@ class handler(BaseHTTPRequestHandler):
                 response = self._handle_reasoning(request_data)
             elif self.path == "/dependencies":
                 response = self._handle_dependencies(request_data)
+            elif self.path == "/test":
+                response = self._handle_test(request_data)
             else:
                 response = {
                     "error": "Endpoint not found",
@@ -435,3 +446,11 @@ print("Code generation for: {prompt}")"""
                 "status": dependency_manager.get_status(),
                 "timestamp": datetime.now().isoformat()
             }
+    
+    def _handle_test(self, request_data: dict) -> dict:
+        """Handle test requests - simple endpoint to verify POST works"""
+        return {
+            "message": "Test POST endpoint working",
+            "received_data": request_data,
+            "timestamp": datetime.now().isoformat()
+        }
