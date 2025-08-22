@@ -81,11 +81,32 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
                 return
             
-            # Read request body
-            content_length = int(self.headers.get('Content-Length', 0))
-            post_data = self.rfile.read(content_length)
-            request_data = json.loads(post_data.decode('utf-8'))
+            # Read request body with better error handling
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length <= 0:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "Empty request body"}).encode())
+                    return
+                
+                post_data = self.rfile.read(content_length)
+                request_data = json.loads(post_data.decode('utf-8'))
+            except ValueError as e:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": f"Invalid Content-Length: {str(e)}"}).encode())
+                return
+            except json.JSONDecodeError as e:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": f"Invalid JSON: {str(e)}"}).encode())
+                return
             
+            # Route to appropriate handler
             if path == '/generate':
                 response = self._handle_code_generation(request_data)
             elif path == '/search':
@@ -107,10 +128,17 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
             
         except Exception as e:
+            # Better error logging
+            error_response = {
+                "error": "Internal server error",
+                "details": str(e),
+                "path": self.path,
+                "timestamp": datetime.now().isoformat()
+            }
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps(error_response).encode())
     
     def do_OPTIONS(self):
         """Handle CORS preflight requests"""
