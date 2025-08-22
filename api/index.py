@@ -9,11 +9,19 @@ import json
 from datetime import datetime
 from urllib.parse import urlparse
 
-# Import progressive dependency manager
+# Import progressive dependency manager (conditional)
+PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
+dependency_manager = None
+
 try:
     from dependency_manager import dependency_manager
     PROGRESSIVE_ENHANCEMENT_AVAILABLE = True
-except ImportError:
+    print("Progressive enhancement system loaded successfully")
+except ImportError as e:
+    print(f"Progressive enhancement not available: {e}")
+    PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
+except Exception as e:
+    print(f"Error loading progressive enhancement: {e}")
     PROGRESSIVE_ENHANCEMENT_AVAILABLE = False
 
 # Configuration
@@ -496,11 +504,13 @@ This {domain} problem requires systematic analysis and careful implementation.
         """Handle dependency management requests"""
         action = request_data.get('action', 'status')
         
-        if not PROGRESSIVE_ENHANCEMENT_AVAILABLE:
+        if not PROGRESSIVE_ENHANCEMENT_AVAILABLE or dependency_manager is None:
             return {
                 "error": "Progressive enhancement not available",
                 "message": "Dependency manager not loaded",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "available_actions": ["status"],
+                "note": "Install packages locally first to enable progressive enhancement"
             }
         
         try:
