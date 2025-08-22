@@ -5,8 +5,8 @@ python-multipart
 pydantic
 
 # # Authentication and security
-# pyjwt
-# cryptography
+pyjwt
+cryptography
 
 # # AI and ML core libraries - CPU only for Vercel compatibility
 # torch --index-url https://download.pytorch.org/whl/cpu
