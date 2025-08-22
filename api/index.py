@@ -38,24 +38,35 @@ class ProgressiveDependencyManager:
     
     def _check_installed_packages(self):
         """Check which packages are already installed"""
+        # Initialize all features as not available initially
+        for feature in self.available_features:
+            self.feature_status[feature] = "not_installed"
+        
+        # Check packages safely
         try:
             import requests
             self.installed_packages.add("requests")
-            self.feature_status["web_search"] = "available"
+            logger.info("requests package available")
         except ImportError:
-            self.feature_status["web_search"] = "not_installed"
+            logger.info("requests package not available")
         
         try:
             import bs4
             self.installed_packages.add("beautifulsoup4")
+            logger.info("beautifulsoup4 package available")
         except ImportError:
-            pass
+            logger.info("beautifulsoup4 package not available")
         
         try:
             import lxml
             self.installed_packages.add("lxml")
+            logger.info("lxml package available")
         except ImportError:
-            pass
+            logger.info("lxml package not available")
+        
+        # Update feature status based on available packages
+        if "requests" in self.installed_packages and "beautifulsoup4" in self.installed_packages:
+            self.feature_status["web_search"] = "available"
     
     def install_package(self, package_name: str) -> bool:
         """Install a specific package"""
@@ -88,11 +99,13 @@ class ProgressiveDependencyManager:
     
     def get_enhanced_search(self, query: str, depth: int = 5) -> dict:
         """Enhanced web search using progressive dependency loading"""
-        if "web_search" not in self.feature_status or self.feature_status["web_search"] != "enabled":
+        # Always try to enable web search first
+        if self.feature_status.get("web_search") != "enabled":
             if not self.enable_feature("web_search"):
                 return self._get_mock_search(query, depth)
         
         try:
+            # Dynamic import after ensuring packages are available
             import requests
             import bs4
             from bs4 import BeautifulSoup
@@ -164,7 +177,12 @@ class ProgressiveDependencyManager:
         }
 
 # Initialize dependency manager
-dependency_manager = ProgressiveDependencyManager()
+try:
+    dependency_manager = ProgressiveDependencyManager()
+    logger.info("Dependency manager initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize dependency manager: {e}")
+    dependency_manager = None
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -187,11 +205,11 @@ class handler(BaseHTTPRequestHandler):
                     "status": "operational",
                     "phase": "Phase 1: Basic Web and Search",
                     "timestamp": datetime.now().isoformat(),
-                    "dependency_manager": dependency_manager.get_status()
+                    "dependency_manager": dependency_manager.get_status() if dependency_manager else {"error": "Not initialized"}
                 }
             elif self.path == "/dependencies":
                 response = {
-                    "dependencies": dependency_manager.get_status(),
+                    "dependencies": dependency_manager.get_status() if dependency_manager else {"error": "Not initialized"},
                     "installation_guide": "Use POST /dependencies to install packages",
                     "timestamp": datetime.now().isoformat()
                 }
@@ -293,7 +311,13 @@ class handler(BaseHTTPRequestHandler):
             }
         
         # Use progressive enhancement for search
-        return dependency_manager.get_enhanced_search(query, depth)
+        if dependency_manager:
+            return dependency_manager.get_enhanced_search(query, depth)
+        else:
+            return {
+                "error": "Dependency manager not available",
+                "timestamp": datetime.now().isoformat()
+            }
     
     def _handle_code_generation(self, request_data: dict) -> dict:
         """Handle code generation requests"""
@@ -365,6 +389,12 @@ print("Code generation for: {prompt}")"""
     
     def _handle_dependencies(self, request_data: dict) -> dict:
         """Handle dependency management requests"""
+        if not dependency_manager:
+            return {
+                "error": "Dependency manager not available",
+                "timestamp": datetime.now().isoformat()
+            }
+        
         action = request_data.get('action', 'status')
         
         if action == 'install_package':
