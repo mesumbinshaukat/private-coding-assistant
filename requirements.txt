@@ -1,0 +1,22 @@
+# Core FastAPI and server dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.2
+
+# Authentication and security
+pyjwt==2.8.0
+
+# AI and ML core libraries - lightweight for Vercel
+torch==2.1.1 --index-url https://download.pytorch.org/whl/cpu
+transformers==4.35.2
+tokenizers==0.15.0
+
+# Web scraping and search
+requests==2.31.0
+
+# Development and testing
+pytest==7.4.3
+
+# Utilities
+python-dotenv==1.0.0
