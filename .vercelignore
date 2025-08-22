@@ -1,0 +1,65 @@
+# Exclude unnecessary files from Vercel deployment
+# This helps reduce the serverless function size below 250MB
+
+# Development and documentation files
+*.md
+*.txt
+*.log
+*.pyc
+__pycache__/
+*.cache
+.env
+.env.*
+
+# Project structure files
+desktop-app/
+scripts/
+tests/
+examples/
+docs/
+*.bat
+*.sh
+*.ps1
+
+# Git and IDE files
+.git/
+.github/
+.vscode/
+.idea/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Node.js files (if any)
+node_modules/
+package*.json
+
+# Large data files
+*.csv
+*.json
+*.xml
+*.zip
+*.tar.gz
+
+# Backup files
+*_backup.*
+*_full.*
+*_vercel.*
+
+# Training and model files
+models/
+training/
+memory/
+logs/
+
+# Dependencies that will be installed post-deployment
+requirements_full.txt
+requirements_phases.json
+install_dependencies.py

@@ -9,28 +9,28 @@ pyjwt
 cryptography
 
 # # AI and ML core libraries - CPU only for Vercel compatibility
-# torch --index-url https://download.pytorch.org/whl/cpu
-# transformers
-# datasets
-# tokenizers
+torch --index-url https://download.pytorch.org/whl/cpu
+transformers
+datasets
+tokenizers
 
 # # LangChain for orchestration
-# langchain
-# langchain-community
+langchain
+langchain-community
 
 # # Training and fine-tuning
-# peft
-# accelerate
+peft
+accelerate
 
 # # Vector search and embeddings
-# faiss-cpu
-# sentence-transformers
+faiss-cpu
+sentence-transformers
 
 # # Web scraping and search
-# beautifulsoup4
-# requests
-# aiohttp
-# duckduckgo-search
+beautifulsoup4
+requests
+aiohttp
+duckduckgo-search
 
 # # Mathematical computing
 numpy
@@ -39,24 +39,24 @@ sympy
 networkx
 
 # # Statistical analysis
-# scikit-learn
-# pandas
+scikit-learn
+pandas
 
 # # Natural language processing
-# nltk
+nltk
 
 # # Development and testing
-# pytest
-# pytest-asyncio
+pytest
+pytest-asyncio
 
 # # Utilities
-# python-dotenv
+python-dotenv
 
 # # Data serialization
-# orjson
+orjson
 
 # # Logging
-# structlog
+structlog
 
 # # HTTP client
-# httpx
+httpx
