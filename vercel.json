@@ -18,7 +18,7 @@
   ],
   "functions": {
     "api/**": {
-      "excludeFiles": ".next/** *.cache/** node_modules/** public/** app/** desktop-app/** scripts/** tests/** examples/** docs/** *.md *.txt *.log *.pyc __pycache__/** .git/** .github/** .vscode/** .idea/** venv/** env/** .venv/** build/** dist/** *.egg-info/** *.csv *.json *.xml *.zip *.tar.gz *_backup.* *_full.* *_vercel.* models/** training/** memory/** logs/** requirements_full.txt requirements_phases.json install_dependencies.py agent_core.py dependency_manager.py index_full.py index_vercel.py"
+      "excludeFiles": "desktop-app/** scripts/** tests/** examples/** docs/** *.md *.txt *.log *.pyc __pycache__/** .git/** .github/** .vscode/** .idea/** venv/** env/** build/** dist/** *.egg-info/** *.csv *.zip *.tar.gz *_backup.* *_full.* *_vercel.* models/** training/** memory/** logs/** agent_core.py dependency_manager.py index_full.py index_vercel.py"
     }
   }
 }
