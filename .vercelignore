@@ -63,3 +63,13 @@ logs/
 requirements_full.txt
 requirements_phases.json
 install_dependencies.py
+
+# Heavy AI files (exclude from initial deployment)
+api/agent_core.py
+api/dependency_manager.py
+api/index_full.py
+api/index_vercel.py
+api/requirements_backup.txt
+api/requirements_full.txt
+api/requirements_minimal.txt
+api/utils/
