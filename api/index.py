@@ -2,96 +2,191 @@
 Minimal API entry point for Vercel deployment - Debug Version
 """
 
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Dict, Any
+from http.server import BaseHTTPRequestHandler
+import json
 import jwt
 import requests
 from datetime import datetime
-
-# Initialize FastAPI app
-app = FastAPI(
-    title="Autonomous AI Agent API",
-    description="Production-ready autonomous AI agent",
-    version="2.0.0"
-)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from urllib.parse import urlparse, parse_qs
 
 # Configuration
 SECRET_KEY = "autonomous-ai-agent-secret-key-2024"
 
-# Authentication
-security = HTTPBearer()
-
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    try:
-        jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"])
-        return True
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-# Request/Response models
-class CodeRequest(BaseModel):
-    prompt: str = Field(..., description="Code generation prompt")
-    language: str = Field("python", description="Programming language")
-    context: str = Field(None, description="Additional context")
-
-class SearchRequest(BaseModel):
-    query: str = Field(..., description="Search query")
-    depth: int = Field(5, description="Search depth")
-    include_code: bool = Field(True, description="Include code examples")
-
-class ReasonRequest(BaseModel):
-    problem: str = Field(..., description="Problem to reason about")
-    domain: str = Field("coding", description="Problem domain")
-    include_math: bool = Field(True, description="Include mathematical reasoning")
-
-# Fallback implementations
-def fallback_code_generation(prompt: str, language: str) -> Dict[str, Any]:
-    """Template-based code generation"""
-    templates = {
-        "fibonacci": {
-            "python": """def fibonacci(n):
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """Handle GET requests"""
+        try:
+            parsed_path = urlparse(self.path)
+            path = parsed_path.path
+            
+            if path == '/':
+                response = {
+                    "message": "Autonomous AI Agent API - Working!",
+                    "status": "active",
+                    "version": "2.0.0",
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif path == '/health':
+                response = {
+                    "status": "healthy",
+                    "timestamp": datetime.now().isoformat()
+                }
+            elif path == '/status':
+                # Check if authorization header is present
+                auth_header = self.headers.get('Authorization')
+                if not auth_header or not self._verify_token(auth_header):
+                    self.send_response(401)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
+                    return
+                
+                response = {
+                    "api_status": "active",
+                    "available_features": ["code_generation", "web_search", "reasoning"],
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                response = {"error": "Endpoint not found"}
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            self.end_headers()
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
+    
+    def do_POST(self):
+        """Handle POST requests"""
+        try:
+            parsed_path = urlparse(self.path)
+            path = parsed_path.path
+            
+            # Check authorization for all POST endpoints
+            auth_header = self.headers.get('Authorization')
+            if not auth_header or not self._verify_token(auth_header):
+                self.send_response(401)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
+                return
+            
+            # Read request body
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            request_data = json.loads(post_data.decode('utf-8'))
+            
+            if path == '/generate':
+                response = self._handle_code_generation(request_data)
+            elif path == '/search':
+                response = self._handle_search(request_data)
+            elif path == '/reason':
+                response = self._handle_reasoning(request_data)
+            else:
+                response = {"error": "Endpoint not found"}
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            self.end_headers()
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
+    
+    def do_OPTIONS(self):
+        """Handle CORS preflight requests"""
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        self.end_headers()
+    
+    def _verify_token(self, auth_header):
+        """Verify JWT token"""
+        try:
+            if not auth_header.startswith('Bearer '):
+                return False
+            
+            token = auth_header.split(' ')[1]
+            jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            return True
+        except:
+            return False
+    
+    def _handle_code_generation(self, request_data):
+        """Handle code generation requests"""
+        prompt = request_data.get('prompt', '')
+        language = request_data.get('language', 'python')
+        
+        # Template-based code generation
+        templates = {
+            "fibonacci": {
+                "python": """def fibonacci(n):
     if n <= 1:
         return n
     return fibonacci(n-1) + fibonacci(n-2)
 
 # Example usage
 print(fibonacci(10))""",
-            "javascript": """function fibonacci(n) {
+                "javascript": """function fibonacci(n) {
     if (n <= 1) return n;
     return fibonacci(n-1) + fibonacci(n-2);
 }
 
 console.log(fibonacci(10));"""
-        }
-    }
+            },
+            "binary_search": {
+                "python": """def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
     
-    prompt_lower = prompt.lower()
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
     
-    for template_name, template_code in templates.items():
-        if template_name in prompt_lower:
-            code = template_code.get(language, template_code.get("python", ""))
-            return {
-                "code": code,
-                "explanation": f"Template-based {language} implementation for {template_name}",
-                "confidence": 0.8,
-                "method": "template"
+    return -1
+
+# Example usage
+arr = [1, 3, 5, 7, 9, 11]
+print(binary_search(arr, 7))"""
             }
-    
-    # Default template
-    if language == "python":
-        code = f"""# {prompt}
+        }
+        
+        prompt_lower = prompt.lower()
+        
+        for template_name, template_code in templates.items():
+            if template_name in prompt_lower:
+                code = template_code.get(language, template_code.get("python", ""))
+                return {
+                    "code": code,
+                    "explanation": f"Template-based {language} implementation for {template_name}",
+                    "confidence": 0.8,
+                    "method": "template",
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        # Default template
+        if language == "python":
+            code = f"""# {prompt}
 
 def solve_problem():
     '''
@@ -102,83 +197,93 @@ def solve_problem():
 
 if __name__ == "__main__":
     solve_problem()"""
-    else:
-        code = f"// {prompt}\n// TODO: Implement solution in {language}"
-    
-    return {
-        "code": code,
-        "explanation": f"Basic template for {language}",
-        "confidence": 0.6,
-        "method": "basic_template"
-    }
-
-def fallback_web_search(query: str) -> Dict[str, Any]:
-    """Basic web search"""
-    try:
-        response = requests.get(
-            "https://api.duckduckgo.com/",
-            params={
-                "q": query,
-                "format": "json",
-                "no_html": "1",
-                "skip_disambig": "1"
-            },
-            timeout=10
-        )
+        else:
+            code = f"// {prompt}\n// TODO: Implement solution in {language}"
         
-        if response.status_code == 200:
-            data = response.json()
-            results = []
+        return {
+            "code": code,
+            "explanation": f"Basic template for {language}",
+            "confidence": 0.6,
+            "method": "basic_template",
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    def _handle_search(self, request_data):
+        """Handle search requests"""
+        query = request_data.get('query', '')
+        
+        try:
+            # Use DuckDuckGo API for search
+            response = requests.get(
+                "https://api.duckduckgo.com/",
+                params={
+                    "q": query,
+                    "format": "json",
+                    "no_html": "1",
+                    "skip_disambig": "1"
+                },
+                timeout=10
+            )
             
-            if data.get("AbstractText"):
-                results.append({
-                    "title": data.get("AbstractSource", "DuckDuckGo"),
-                    "snippet": data.get("AbstractText"),
-                    "url": data.get("AbstractURL", "")
-                })
+            if response.status_code == 200:
+                data = response.json()
+                results = []
+                
+                if data.get("AbstractText"):
+                    results.append({
+                        "title": data.get("AbstractSource", "DuckDuckGo"),
+                        "snippet": data.get("AbstractText"),
+                        "url": data.get("AbstractURL", "")
+                    })
+                
+                return {
+                    "results": results,
+                    "synthesized_answer": data.get("AbstractText", "No direct answer found"),
+                    "confidence": 0.7,
+                    "method": "duckduckgo_api",
+                    "timestamp": datetime.now().isoformat()
+                }
             
             return {
-                "results": results,
-                "synthesized_answer": data.get("AbstractText", "No direct answer found"),
-                "confidence": 0.7,
-                "method": "duckduckgo_api"
+                "results": [],
+                "synthesized_answer": "Search unavailable",
+                "confidence": 0.0,
+                "method": "fallback",
+                "timestamp": datetime.now().isoformat()
             }
-        
-        return {
-            "results": [],
-            "synthesized_answer": "Search unavailable",
-            "confidence": 0.0,
-            "method": "fallback"
-        }
-    except Exception as e:
-        return {
-            "results": [],
-            "synthesized_answer": f"Search error: {str(e)}",
-            "confidence": 0.0,
-            "method": "error"
-        }
-
-def fallback_reasoning(problem: str, domain: str) -> Dict[str, Any]:
-    """Basic reasoning"""
-    reasoning_steps = [
-        {
-            "step": 1,
-            "description": "Problem Analysis",
-            "content": f"Analyzing the {domain} problem: {problem}"
-        },
-        {
-            "step": 2,
-            "description": "Solution Planning", 
-            "content": "Breaking down the problem into manageable components"
-        },
-        {
-            "step": 3,
-            "description": "Implementation Strategy",
-            "content": f"Determining approach for this {domain} challenge"
-        }
-    ]
+        except Exception as e:
+            return {
+                "results": [],
+                "synthesized_answer": f"Search error: {str(e)}",
+                "confidence": 0.0,
+                "method": "error",
+                "timestamp": datetime.now().isoformat()
+            }
     
-    solution = f"""
+    def _handle_reasoning(self, request_data):
+        """Handle reasoning requests"""
+        problem = request_data.get('problem', '')
+        domain = request_data.get('domain', 'coding')
+        
+        reasoning_steps = [
+            {
+                "step": 1,
+                "description": "Problem Analysis",
+                "content": f"Analyzing the {domain} problem: {problem}"
+            },
+            {
+                "step": 2,
+                "description": "Solution Planning", 
+                "content": "Breaking down the problem into manageable components"
+            },
+            {
+                "step": 3,
+                "description": "Implementation Strategy",
+                "content": f"Determining approach for this {domain} challenge"
+            }
+        ]
+        
+        solution = f"""
 Basic approach for: {problem}
 
 1. Understand the requirements
@@ -189,91 +294,11 @@ Basic approach for: {problem}
 
 This {domain} problem requires systematic analysis.
 """
-    
-    return {
-        "reasoning_steps": reasoning_steps,
-        "solution": solution.strip(),
-        "confidence": 0.6,
-        "method": "basic_reasoning"
-    }
-
-# API Endpoints
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "message": "Autonomous AI Agent API - Working!",
-        "status": "active",
-        "version": "2.0.0",
-        "timestamp": datetime.now().isoformat()
-    }
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat()
-    }
-
-@app.post("/generate")
-async def generate_code(request: CodeRequest, token: bool = Depends(verify_token)):
-    """Generate code with fallback template system"""
-    try:
-        result = fallback_code_generation(request.prompt, request.language)
-        result["timestamp"] = datetime.now().isoformat()
-        return result
         
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
-
-@app.post("/search")
-async def deep_search(request: SearchRequest, token: bool = Depends(verify_token)):
-    """Perform web search with fallback capabilities"""
-    try:
-        result = fallback_web_search(request.query)
-        result["timestamp"] = datetime.now().isoformat()
-        return result
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
-
-@app.post("/reason")
-async def reason_step_by_step(request: ReasonRequest, token: bool = Depends(verify_token)):
-    """Perform reasoning with fallback capabilities"""
-    try:
-        result = fallback_reasoning(request.problem, request.domain)
-        result["timestamp"] = datetime.now().isoformat()
-        return result
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Reasoning failed: {str(e)}")
-
-@app.get("/status")
-async def get_status(token: bool = Depends(verify_token)):
-    """Get API status"""
-    return {
-        "api_status": "active",
-        "available_features": ["code_generation", "web_search", "reasoning"],
-        "timestamp": datetime.now().isoformat()
-    }
-
-# Vercel handler - This is required for Vercel to work
-from http.server import BaseHTTPRequestHandler
-import json
-
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        
-        if self.path == '/':
-            response = {"Hello": "World"}
-        elif self.path == '/health':
-            response = {"status": "ok"}
-        else:
-            response = {"error": "Not found"}
-        
-        self.wfile.write(json.dumps(response).encode())
-        return
+        return {
+            "reasoning_steps": reasoning_steps,
+            "solution": solution.strip(),
+            "confidence": 0.6,
+            "method": "basic_reasoning",
+            "timestamp": datetime.now().isoformat()
+        }
