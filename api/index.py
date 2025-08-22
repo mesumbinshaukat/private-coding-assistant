@@ -204,7 +204,10 @@ class handler(BaseHTTPRequestHandler):
                     "timestamp": datetime.now().isoformat()
                 }
             elif self.path == "/test":
-                response = self._handle_test(request_data)
+                response = {
+                    "message": "Test GET endpoint working",
+                    "timestamp": datetime.now().isoformat()
+                }
             else:
                 response = {
                     "error": "Endpoint not found",
