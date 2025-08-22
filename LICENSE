@@ -1,0 +1,117 @@
+MIT License
+
+Copyright (c) 2024 Autonomous AI Agent Project
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Third-Party Licenses:
+
+This project incorporates several open-source libraries and frameworks:
+
+1. FastAPI - MIT License
+2. LangChain - MIT License  
+3. Transformers (Hugging Face) - Apache License 2.0
+4. PyTorch - BSD 3-Clause License
+5. Electron - MIT License
+6. FAISS - MIT License
+7. SentenceTransformers - Apache License 2.0
+8. BeautifulSoup4 - MIT License
+9. Requests - Apache License 2.0
+10. NumPy - BSD License
+11. SciPy - BSD License
+12. NLTK - Apache License 2.0
+13. NetworkX - BSD License
+14. Datasets (Hugging Face) - Apache License 2.0
+15. PEFT (Parameter-Efficient Fine-Tuning) - Apache License 2.0
+
+For complete license texts of these dependencies, please refer to their respective repositories.
+
+---
+
+Attribution:
+
+This project is inspired by and builds upon research and development in:
+- Large Language Models and Natural Language Processing
+- Reinforcement Learning from Human Feedback (RLHF)
+- Parameter-Efficient Fine-Tuning (PEFT/LoRA)
+- Retrieval-Augmented Generation (RAG)
+- ReAct (Reasoning and Acting) framework
+- Autonomous agent architectures
+
+We acknowledge the contributions of the broader AI/ML research community that made this project possible.
+
+---
+
+Model Licenses:
+
+This project is designed to work with various pre-trained models from Hugging Face:
+
+- DistilGPT-2: Apache License 2.0
+- GPT-2: Modified MIT License
+- CodeParrot models: Apache License 2.0
+- Other models: Please refer to their individual model cards on Hugging Face
+
+When using this software with specific models, ensure compliance with their respective licenses.
+
+---
+
+Data Licenses:
+
+The project is designed to work with publicly available datasets:
+
+- GitHub Code datasets: Subject to individual repository licenses
+- Stack Overflow data: CC BY-SA 4.0
+- Wikipedia data: CC BY-SA 3.0
+- Other datasets: Please refer to their individual licenses
+
+Users are responsible for ensuring compliance with data source licenses when training or fine-tuning models.
+
+---
+
+Deployment Considerations:
+
+When deploying this software:
+
+1. Ensure compliance with cloud provider terms of service
+2. Respect API rate limits and usage policies
+3. Follow data privacy regulations (GDPR, CCPA, etc.)
+4. Implement appropriate security measures
+5. Monitor and log usage appropriately
+
+---
+
+Disclaimer:
+
+This software is provided for educational and research purposes. Users are responsible for:
+
+- Ensuring ethical use of AI capabilities
+- Compliance with applicable laws and regulations
+- Proper attribution and licensing compliance
+- Security and privacy considerations
+- Responsible AI practices
+
+The developers and contributors are not liable for any misuse or consequences arising from the use of this software.
+
+---
+
+Contact:
+
+For licensing questions or commercial use inquiries, please create an issue in the project repository.

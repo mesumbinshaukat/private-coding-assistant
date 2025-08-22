@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https: wss:;
+    ">
+    <title>Autonomous AI Agent</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ai-panel.css">
+    <link rel="stylesheet" href="css/editor.css">
+    
+    <!-- Monaco Editor -->
+    <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- Title Bar (custom for better integration) -->
+    <div class="title-bar">
+        <div class="title-bar-left">
+            <div class="app-icon">
+                <span class="material-icons">smart_toy</span>
+            </div>
+            <div class="app-title">Autonomous AI Agent</div>
+        </div>
+        <div class="title-bar-center">
+            <div class="file-tabs" id="file-tabs">
+                <!-- File tabs will be dynamically added here -->
+            </div>
+        </div>
+        <div class="title-bar-right">
+            <button class="title-bar-button" id="minimize-btn" title="Minimize">
+                <span class="material-icons">minimize</span>
+            </button>
+            <button class="title-bar-button" id="maximize-btn" title="Maximize">
+                <span class="material-icons">crop_square</span>
+            </button>
+            <button class="title-bar-button close" id="close-btn" title="Close">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Application Layout -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <!-- File Explorer -->
+            <div class="sidebar-section" id="explorer-section">
+                <div class="sidebar-header">
+                    <span class="material-icons">folder</span>
+                    <span>Explorer</span>
+                    <button class="sidebar-toggle" id="explorer-toggle">
+                        <span class="material-icons">expand_less</span>
+                    </button>
+                </div>
+                <div class="sidebar-content" id="file-explorer">
+                    <div class="file-tree" id="file-tree">
+                        <div class="empty-state">
+                            <span class="material-icons">folder_open</span>
+                            <p>No folder opened</p>
+                            <button class="btn-primary" id="open-folder-btn">Open Folder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Assistant -->
+            <div class="sidebar-section" id="ai-section">
+                <div class="sidebar-header">
+                    <span class="material-icons">psychology</span>
+                    <span>AI Assistant</span>
+                    <button class="sidebar-toggle" id="ai-toggle">
+                        <span class="material-icons">expand_less</span>
+                    </button>
+                </div>
+                <div class="sidebar-content" id="ai-assistant">
+                    <!-- AI Chat Interface -->
+                    <div class="ai-chat" id="ai-chat">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="welcome-message">
+                                <div class="ai-avatar">
+                                    <span class="material-icons">smart_toy</span>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hello! I'm your AI coding assistant. I can help you:</p>
+                                    <ul>
+                                        <li>Generate code from natural language</li>
+                                        <li>Explain complex algorithms</li>
+                                        <li>Search for coding solutions</li>
+                                        <li>Optimize your code</li>
+                                        <li>Debug issues</li>
+                                    </ul>
+                                    <p>How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <div class="chat-input-wrapper">
+                                <textarea 
+                                    id="chat-input" 
+                                    placeholder="Ask me anything about coding..."
+                                    rows="3"
+                                ></textarea>
+                                <div class="chat-input-actions">
+                                    <button id="send-message-btn" class="btn-icon" title="Send message">
+                                        <span class="material-icons">send</span>
+                                    </button>
+                                    <button id="clear-chat-btn" class="btn-icon" title="Clear chat">
+                                        <span class="material-icons">clear_all</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="action-btn" id="generate-code-btn">
+                            <span class="material-icons">code</span>
+                            Generate Code
+                        </button>
+                        <button class="action-btn" id="search-web-btn">
+                            <span class="material-icons">search</span>
+                            Search Web
+                        </button>
+                        <button class="action-btn" id="reason-problem-btn">
+                            <span class="material-icons">psychology</span>
+                            Reason Problem
+                        </button>
+                        <button class="action-btn" id="analyze-code-btn">
+                            <span class="material-icons">analytics</span>
+                            Analyze Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status and Training -->
+            <div class="sidebar-section" id="status-section">
+                <div class="sidebar-header">
+                    <span class="material-icons">info</span>
+                    <span>Agent Status</span>
+                    <button class="sidebar-toggle" id="status-toggle">
+                        <span class="material-icons">expand_less</span>
+                    </button>
+                </div>
+                <div class="sidebar-content" id="agent-status">
+                    <div class="status-item">
+                        <span class="status-label">Connection:</span>
+                        <span class="status-value" id="connection-status">Connecting...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Model:</span>
+                        <span class="status-value" id="model-status">Loading...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Memory:</span>
+                        <span class="status-value" id="memory-status">0 KB</span>
+                    </div>
+                    <div class="status-actions">
+                        <button class="btn-secondary" id="refresh-status-btn">
+                            <span class="material-icons">refresh</span>
+                            Refresh
+                        </button>
+                        <button class="btn-secondary" id="trigger-training-btn">
+                            <span class="material-icons">model_training</span>
+                            Train
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Editor Container -->
+            <div class="editor-container" id="editor-container">
+                <div class="editor-placeholder" id="editor-placeholder">
+                    <div class="placeholder-content">
+                        <div class="logo">
+                            <span class="material-icons">smart_toy</span>
+                        </div>
+                        <h1>Autonomous AI Agent</h1>
+                        <p>Your intelligent coding companion</p>
+                        <div class="getting-started">
+                            <h3>Getting Started</h3>
+                            <div class="quick-start-actions">
+                                <button class="quick-start-btn" id="new-file-btn">
+                                    <span class="material-icons">add</span>
+                                    New File
+                                </button>
+                                <button class="quick-start-btn" id="open-file-btn">
+                                    <span class="material-icons">folder_open</span>
+                                    Open File
+                                </button>
+                                <button class="quick-start-btn" id="ask-ai-btn">
+                                    <span class="material-icons">psychology</span>
+                                    Ask AI
+                                </button>
+                            </div>
+                        </div>
+                        <div class="recent-files" id="recent-files">
+                            <h3>Recent Files</h3>
+                            <div class="recent-files-list" id="recent-files-list">
+                                <p class="no-recent">No recent files</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Monaco Editor will be mounted here -->
+                <div class="editor-wrapper" id="editor-wrapper" style="display: none;">
+                    <div id="monaco-editor"></div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-bar-left">
+                    <span class="status-item" id="line-col-indicator">Ln 1, Col 1</span>
+                    <span class="status-item" id="language-indicator">Plain Text</span>
+                    <span class="status-item" id="encoding-indicator">UTF-8</span>
+                </div>
+                <div class="status-bar-right">
+                    <span class="status-item" id="ai-status">AI Ready</span>
+                    <span class="status-item" id="connection-indicator">
+                        <span class="material-icons online">wifi</span>
+                        Online
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Container -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Modal Title</h2>
+                <button class="modal-close" id="modal-close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-content" id="modal-content">
+                <!-- Modal content will be dynamically added here -->
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <!-- Modal footer will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container">
+        <!-- Toast notifications will be dynamically added here -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="context-menu">
+        <!-- Context menu items will be dynamically added here -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/components/toast.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/context-menu.js"></script>
+    <script src="js/ai-client.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/file-manager.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/status-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

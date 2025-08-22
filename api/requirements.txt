@@ -1,68 +1,62 @@
 # Core FastAPI and server dependencies
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
-pydantic==2.5.0
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
 
 # Authentication and security
-pyjwt==2.8.0
-cryptography==41.0.8
+pyjwt
+cryptography
 
-# AI and ML core libraries
-torch==2.1.0+cpu --find-links https://download.pytorch.org/whl/torch_stable.html
-transformers==4.35.2
-datasets==2.14.7
-tokenizers==0.15.0
+# AI and ML core libraries - CPU only for Vercel compatibility
+torch --index-url https://download.pytorch.org/whl/cpu
+transformers
+datasets
+tokenizers
 
 # LangChain for orchestration
-langchain==0.0.340
-langchain-community==0.0.6
+langchain
+langchain-community
 
 # Training and fine-tuning
-peft==0.6.2
-accelerate==0.24.1
-bitsandbytes==0.41.3
-
-# RLHF (optional, may need to be removed for Vercel size limits)
-# trl==0.7.4
+peft
+accelerate
 
 # Vector search and embeddings
-faiss-cpu==1.7.4
-sentence-transformers==2.2.2
+faiss-cpu
+sentence-transformers
 
 # Web scraping and search
-beautifulsoup4==4.12.2
-requests==2.31.0
-aiohttp==3.9.1
-duckduckgo-search==3.9.6
+beautifulsoup4
+requests
+aiohttp
+duckduckgo-search
 
 # Mathematical computing
-numpy==1.24.4
-scipy==1.11.4
-sympy==1.12
-networkx==3.2.1
+numpy
+scipy
+sympy
+networkx
 
 # Statistical analysis
-scikit-learn==1.3.2
-pandas==2.1.4
+scikit-learn
+pandas
 
 # Natural language processing
-nltk==3.8.1
+nltk
 
 # Development and testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
+pytest
+pytest-asyncio
 
 # Utilities
-python-dotenv==1.0.0
-pathlib2==2.3.7
-asyncio==3.4.3
+python-dotenv
 
 # Data serialization
-orjson==3.9.10
+orjson
 
 # Logging
-structlog==23.2.0
+structlog
 
 # HTTP client
-httpx==0.25.2
+httpx
