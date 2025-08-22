@@ -2,14 +2,21 @@
 Minimal API entry point for Vercel deployment - Debug Version
 """
 
-from fastapi import FastAPI
+from http.server import BaseHTTPRequestHandler
+import json
 
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        
+        if self.path == '/':
+            response = {"Hello": "World"}
+        elif self.path == '/health':
+            response = {"status": "ok"}
+        else:
+            response = {"error": "Not found"}
+        
+        self.wfile.write(json.dumps(response).encode())
+        return
