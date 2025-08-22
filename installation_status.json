@@ -1,0 +1,10 @@
+{
+  "phases_completed": [
+    "phase_1"
+  ],
+  "current_phase": "phase_2",
+  "failed_packages": [],
+  "total_installed": 3,
+  "last_updated": "2025-08-22T19:45:08.763739",
+  "installation_mode": "manual"
+}
