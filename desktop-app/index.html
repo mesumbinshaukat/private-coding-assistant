@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous AI Agent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🤖 Autonomous AI Agent</h1>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking...</span>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <button class="nav-btn active" data-tab="code">Code Generation</button>
+            <button class="nav-btn" data-tab="search">Web Search</button>
+            <button class="nav-btn" data-tab="reason">Reasoning</button>
+            <button class="nav-btn" data-tab="status">API Status</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Code Generation Tab -->
+            <div class="tab-content active" id="code-tab">
+                <div class="input-section">
+                    <h2>Generate Code</h2>
+                    <div class="input-group">
+                        <label for="codePrompt">What code would you like me to generate?</label>
+                        <textarea id="codePrompt" placeholder="e.g., Write a Python function for fibonacci sequence"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="codeLanguage">Programming Language:</label>
+                        <select id="codeLanguage">
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateCode()">Generate Code</button>
+                </div>
+                <div class="output-section" id="codeOutput">
+                    <h3>Generated Code</h3>
+                    <div class="output-placeholder">Your generated code will appear here...</div>
+                </div>
+            </div>
+
+            <!-- Web Search Tab -->
+            <div class="tab-content" id="search-tab">
+                <div class="input-section">
+                    <h2>Web Search</h2>
+                    <div class="input-group">
+                        <label for="searchQuery">What would you like to search for?</label>
+                        <input type="text" id="searchQuery" placeholder="e.g., Python algorithms, machine learning tutorials">
+                    </div>
+                    <div class="input-group">
+                        <label for="searchDepth">Search Depth:</label>
+                        <select id="searchDepth">
+                            <option value="3">3 results</option>
+                            <option value="5" selected>5 results</option>
+                            <option value="10">10 results</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="performSearch()">Search</button>
+                </div>
+                <div class="output-section" id="searchOutput">
+                    <h3>Search Results</h3>
+                    <div class="output-placeholder">Your search results will appear here...</div>
+                </div>
+            </div>
+
+            <!-- Reasoning Tab -->
+            <div class="tab-content" id="reason-tab">
+                <div class="input-section">
+                    <h2>Step-by-Step Reasoning</h2>
+                    <div class="input-group">
+                        <label for="reasonProblem">What problem would you like me to reason about?</label>
+                        <textarea id="reasonProblem" placeholder="e.g., How to implement a binary search tree"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="reasonDomain">Domain:</label>
+                        <select id="reasonDomain">
+                            <option value="coding" selected>Coding</option>
+                            <option value="algorithms">Algorithms</option>
+                            <option value="data-structures">Data Structures</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="includeMath" checked>
+                            Include mathematical analysis
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="performReasoning()">Analyze</button>
+                </div>
+                <div class="output-section" id="reasonOutput">
+                    <h3>Reasoning Analysis</h3>
+                    <div class="output-placeholder">Your reasoning analysis will appear here...</div>
+                </div>
+            </div>
+
+            <!-- Status Tab -->
+            <div class="tab-content" id="status-tab">
+                <div class="status-section">
+                    <h2>API Status</h2>
+                    <button class="btn btn-secondary" onclick="checkStatus()">Refresh Status</button>
+                    <div class="status-details" id="statusDetails">
+                        <div class="output-placeholder">Click 'Refresh Status' to check API status...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Autonomous AI Agent Desktop App v1.0.0</p>
+            <p>Connected to: <span id="apiUrl">https://private-coding-assistant.vercel.app</span></p>
+        </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

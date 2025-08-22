@@ -1,416 +1,224 @@
 # Autonomous AI Agent Desktop Application
 
-A Windows desktop application that integrates with the Autonomous AI Agent API, providing a VSCode-like interface with built-in AI assistance for coding tasks.
+A modern Electron-based desktop application that integrates with the Autonomous AI Agent API for code generation, web search, and reasoning tasks.
 
 ## Features
 
-- **Integrated Code Editor**: Modified VSCode with AI integration
-- **AI Assistant Sidebar**: Direct interaction with the autonomous agent
-- **Real-time Code Analysis**: Automatic complexity and optimization suggestions
-- **Web Search Integration**: In-editor search for coding solutions
-- **Training Dashboard**: Monitor and trigger agent self-training
-- **Multi-language Support**: Python, JavaScript, and more
+- **Code Generation**: Generate code in multiple programming languages with intelligent templates
+- **Web Search**: Perform deep web searches using DuckDuckGo API
+- **Step-by-Step Reasoning**: Get detailed analysis and solutions for complex problems
+- **Real-time API Status**: Monitor API health and availability
+- **Code Saving**: Save generated code to local files
+- **Modern UI**: Clean, responsive interface with tabbed navigation
 
-## Architecture
+## Screenshots
 
-```
-desktop-app/
-├── electron-app/           # Electron wrapper application
-│   ├── main.js            # Main Electron process
-│   ├── renderer/          # Renderer process files
-│   ├── preload.js         # Preload script for security
-│   └── package.json       # Electron app configuration
-├── vscode-extension/       # VSCode extension for AI integration
-│   ├── extension.js       # Main extension file
-│   ├── package.json       # Extension manifest
-│   ├── src/               # Extension source code
-│   └── webviews/          # Custom webview panels
-├── installer/             # Windows installer files
-│   ├── installer.nsi      # NSIS installer script
-│   └── resources/         # Installer resources
-├── setup.ps1              # Windows setup script
-└── build.js               # Build automation script
-```
+The application features a clean, modern interface with:
+- Gradient header with real-time status indicator
+- Tabbed navigation for different features
+- Input forms with validation
+- Rich output display with syntax highlighting
+- File save functionality
+
+## Prerequisites
+
+- **Node.js** (v16 or higher)
+- **npm** (comes with Node.js)
+- **Windows 10/11** (primary target platform)
 
 ## Installation
 
-### Option 1: Download Pre-built Installer
-1. Download `AutonomousAI-Setup.exe` from the releases page
-2. Run the installer as administrator
-3. Follow the installation wizard
-4. Launch from Start Menu or Desktop shortcut
+### Quick Setup (Windows)
 
-### Option 2: Build from Source
-
-#### Prerequisites
-- Node.js 18+ and npm
-- Python 3.8+
-- Git
-- Visual Studio Build Tools (for native modules)
-
-#### Build Steps
-
-1. **Clone the repository**:
-   ```powershell
-   git clone <repository-url>
-   cd private-model/desktop-app
-   ```
-
+1. **Clone or download** the project files
 2. **Run the setup script**:
-   ```powershell
-   .\setup.ps1
+   ```bash
+   setup.bat
    ```
 
-3. **Build the application**:
-   ```powershell
-   npm run build
+### Manual Setup
+
+1. **Install dependencies**:
+   ```bash
+   npm install
    ```
 
-4. **Create installer**:
-   ```powershell
-   npm run dist
+2. **Start the application**:
+   ```bash
+   npm start
    ```
-
-## Configuration
-
-### API Endpoint Setup
-
-1. Open the application
-2. Go to **Settings** → **AI Agent Configuration**
-3. Enter your API endpoint: `https://your-deployment.vercel.app`
-4. Enter your authentication token: `autonomous-ai-agent-2024`
-5. Test connection and save
-
-### Default Configuration
-
-```json
-{
-  "api": {
-    "endpoint": "https://your-deployment.vercel.app",
-    "token": "autonomous-ai-agent-2024",
-    "timeout": 30000
-  },
-  "editor": {
-    "theme": "dark",
-    "fontSize": 14,
-    "tabSize": 4,
-    "autoSave": true
-  },
-  "ai": {
-    "autoSuggestions": true,
-    "complexityAnalysis": true,
-    "realTimeSearch": false
-  }
-}
-```
 
 ## Usage
 
-### AI Assistant Panel
+### Starting the Application
 
-The AI Assistant panel provides direct access to all agent capabilities:
+```bash
+npm start
+```
 
-1. **Code Generation**:
-   - Type your requirements in natural language
-   - Select programming language
-   - Get generated code with explanations
+### Building the Application
 
-2. **Code Analysis**:
-   - Right-click on code → "Analyze with AI"
-   - Get complexity analysis and optimization suggestions
-   - View mathematical explanations of algorithms
+```bash
+# Create a distributable package
+npm run build
 
-3. **Web Search**:
-   - Search for coding solutions directly in the editor
-   - Get synthesized answers from multiple sources
-   - Insert code examples with attribution
+# Create a directory with the built app
+npm run pack
+```
 
-4. **Step-by-Step Reasoning**:
-   - Input complex problems
-   - Get detailed solution breakdowns
-   - Understand algorithmic approaches
+### Using the Features
 
-### Keyboard Shortcuts
+#### Code Generation
+1. Navigate to the "Code Generation" tab
+2. Enter your code request (e.g., "Write a Python function for fibonacci sequence")
+3. Select the programming language
+4. Click "Generate Code"
+5. Review the generated code and save it if needed
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+Shift+A` | Open AI Assistant |
-| `Ctrl+Shift+G` | Generate Code |
-| `Ctrl+Shift+S` | Search Web |
-| `Ctrl+Shift+R` | Reason About Problem |
-| `Ctrl+Shift+T` | Trigger Training |
-| `F1` | Command Palette |
+#### Web Search
+1. Go to the "Web Search" tab
+2. Enter your search query
+3. Select search depth (3, 5, or 10 results)
+4. Click "Search"
+5. Browse through the results and synthesized answers
 
-### Context Menu Integration
+#### Reasoning
+1. Visit the "Reasoning" tab
+2. Describe the problem you want analyzed
+3. Choose the domain (coding, algorithms, etc.)
+4. Toggle mathematical analysis if needed
+5. Click "Analyze"
+6. Review the step-by-step reasoning and solution
 
-Right-click on code to access:
-- **Explain Code**: Get AI explanation of selected code
-- **Optimize Code**: Get optimization suggestions
-- **Generate Tests**: Create test cases automatically
-- **Debug Code**: Get debugging assistance
-- **Search Similar**: Find similar code patterns online
+#### API Status
+1. Check the "API Status" tab
+2. View real-time API health information
+3. Monitor available features and deployment status
+
+## API Integration
+
+The desktop application connects to the Autonomous AI Agent API at:
+```
+https://private-coding-assistant.vercel.app
+```
+
+### Authentication
+- Uses JWT token authentication
+- Token is configured in the main process
+- All API calls include proper authorization headers
+
+### Endpoints Used
+- `GET /health` - Health check
+- `POST /generate` - Code generation
+- `POST /search` - Web search
+- `POST /reason` - Reasoning analysis
+- `GET /status` - API status
 
 ## Development
 
 ### Project Structure
-
 ```
-electron-app/
-├── main.js                # Main Electron process
-├── package.json           # Dependencies and scripts
-├── renderer/
-│   ├── index.html         # Main application window
-│   ├── css/
-│   │   ├── main.css       # Main stylesheet
-│   │   └── ai-panel.css   # AI panel styling
-│   ├── js/
-│   │   ├── main.js        # Main renderer logic
-│   │   ├── ai-client.js   # AI API client
-│   │   ├── editor.js      # Editor integration
-│   │   └── components/    # UI components
-│   └── assets/            # Images and icons
-├── preload.js             # Preload script
-└── build/                 # Build output
+desktop-app/
+├── main.js          # Main Electron process
+├── preload.js       # Preload script for secure IPC
+├── index.html       # Main application interface
+├── styles.css       # Application styles
+├── renderer.js      # Renderer process logic
+├── package.json     # Dependencies and scripts
+├── setup.bat        # Windows setup script
+└── README.md        # This file
 ```
 
-### VSCode Extension Structure
+### Key Technologies
+- **Electron** - Cross-platform desktop app framework
+- **HTML/CSS/JavaScript** - Frontend interface
+- **Node.js** - Backend runtime
+- **Axios** - HTTP client for API calls
 
-```
-vscode-extension/
-├── package.json           # Extension manifest
-├── extension.js           # Main extension file
-├── src/
-│   ├── ai-provider.js     # AI service provider
-│   ├── commands.js        # Command implementations
-│   ├── panels.js          # Custom panels
-│   └── utils.js           # Utility functions
-├── webviews/
-│   ├── ai-assistant.html  # AI assistant panel
-│   ├── training-dash.html # Training dashboard
-│   └── search-panel.html  # Search interface
-└── resources/             # Extension resources
-```
-
-### Development Commands
-
-```powershell
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Run tests
-npm test
-
-# Create installer
-npm run dist
-
-# Debug Electron app
-npm run debug
-```
-
-### API Integration
-
-The desktop app communicates with the Vercel-deployed API:
-
-```javascript
-// AI API Client
-class AIClient {
-    constructor(endpoint, token) {
-        this.endpoint = endpoint;
-        this.token = token;
-        this.headers = {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
-    }
-
-    async generateCode(prompt, language = 'python', context = null) {
-        const response = await fetch(`${this.endpoint}/generate`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({ prompt, language, context })
-        });
-        return await response.json();
-    }
-
-    async searchWeb(query, depth = 5, includeCode = true) {
-        const response = await fetch(`${this.endpoint}/search`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({ 
-                query, 
-                depth, 
-                include_code: includeCode 
-            })
-        });
-        return await response.json();
-    }
-
-    async reasonStepByStep(problem, domain = 'coding', includeMath = true) {
-        const response = await fetch(`${this.endpoint}/reason`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({ 
-                problem, 
-                domain, 
-                include_math: includeMath 
-            })
-        });
-        return await response.json();
-    }
-
-    async triggerTraining(datasetName = null, trainingType = 'rlhf', iterations = 10) {
-        const response = await fetch(`${this.endpoint}/train`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({ 
-                dataset_name: datasetName,
-                training_type: trainingType,
-                iterations 
-            })
-        });
-        return await response.json();
-    }
-
-    async getStatus() {
-        const response = await fetch(`${this.endpoint}/status`, {
-            method: 'GET',
-            headers: this.headers
-        });
-        return await response.json();
-    }
-}
-```
-
-## Security Considerations
-
-### Electron Security
-- Content Security Policy (CSP) enabled
-- Node integration disabled in renderer
+### Security Features
 - Context isolation enabled
-- Preload scripts for secure API access
-
-### API Security
-- JWT token authentication
-- HTTPS-only communication
+- Node integration disabled
+- Secure IPC communication
 - Input validation and sanitization
-- Rate limiting protection
-
-### Code Execution
-- No local code execution (all processing on server)
-- Sandboxed editor environment
-- Safe file handling
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Application won't start**:
-   - Check Windows version compatibility (Windows 10+)
-   - Run as administrator
-   - Check antivirus software blocking
+#### "Module not found" errors
+- Ensure all dependencies are installed: `npm install`
+- Check Node.js version compatibility
 
-2. **Cannot connect to API**:
-   - Verify internet connection
-   - Check API endpoint URL
-   - Validate authentication token
-   - Check firewall settings
+#### API connection failures
+- Verify the API is running at the configured URL
+- Check network connectivity
+- Ensure authentication token is valid
 
-3. **Code editor not loading**:
-   - Clear application cache: `%APPDATA%\AutonomousAI\`
-   - Restart application
-   - Check for corrupted installation
+#### Build failures
+- Clear npm cache: `npm cache clean --force`
+- Delete node_modules and reinstall: `rm -rf node_modules && npm install`
 
-4. **Performance issues**:
-   - Close unnecessary applications
-   - Check available RAM (minimum 4GB recommended)
-   - Update graphics drivers
+### Debug Mode
+To enable debug mode with DevTools:
+```bash
+set NODE_ENV=development
+npm start
+```
 
-### Debug Information
+## Configuration
 
-Enable debug mode by:
-1. Open Developer Tools: `Ctrl+Shift+I`
-2. Go to Console tab
-3. Look for error messages
-4. Report issues with console output
+### API Settings
+Edit `main.js` to modify:
+- API base URL
+- Authentication token
+- Request timeouts
 
-### Log Files
+### UI Customization
+Modify `styles.css` to change:
+- Color scheme
+- Layout dimensions
+- Typography
 
-Application logs are stored in:
-- Windows: `%APPDATA%\AutonomousAI\logs\`
-- Files: `main.log`, `renderer.log`, `api.log`
+## Building for Distribution
 
-## Performance Optimization
+### Windows
+```bash
+npm run build
+```
+Creates a Windows installer (.exe) in the `dist` folder.
 
-### Recommended System Requirements
+### Cross-platform
+The application can be built for:
+- Windows (NSIS installer)
+- macOS (DMG)
+- Linux (AppImage)
 
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| OS | Windows 10 | Windows 11 |
-| RAM | 4 GB | 8 GB+ |
-| Storage | 2 GB free | 5 GB+ free |
-| Network | Broadband | High-speed |
-| GPU | DirectX 11 | DirectX 12 |
+## Contributing
 
-### Performance Tips
-
-1. **Close unused tabs**: Each editor tab uses memory
-2. **Limit search depth**: Reduce search depth for faster results
-3. **Disable real-time features**: Turn off real-time analysis for large files
-4. **Use local cache**: Enable caching for frequently used content
-5. **Update regularly**: Keep the application updated for performance improvements
-
-## Updates and Maintenance
-
-### Automatic Updates
-- Application checks for updates on startup
-- Downloads and installs updates automatically
-- Backup configuration before updates
-
-### Manual Updates
-1. Download latest installer
-2. Close running application
-3. Run installer (will update existing installation)
-4. Restart application
-
-### Configuration Backup
-- Settings automatically backed up before updates
-- Manual backup: Copy `%APPDATA%\AutonomousAI\config\`
-- Restore: Paste configuration files to same location
-
-## Support and Feedback
-
-### Getting Help
-- **Documentation**: Check this README and online docs
-- **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Ask questions in GitHub Discussions
-- **Email**: support@autonomous-ai-agent.com
-
-### Feature Requests
-1. Open GitHub Issue with label "enhancement"
-2. Describe the desired feature
-3. Explain use case and benefits
-4. Community voting determines priority
-
-### Contributing
 1. Fork the repository
-2. Create feature branch
-3. Make changes with tests
-4. Submit pull request
-5. Participate in code review
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## License
 
-This desktop application is part of the Autonomous AI Agent project and is licensed under the MIT License. See the main project LICENSE file for details.
+MIT License - see LICENSE file for details
 
-## Acknowledgments
+## Support
 
-- **Electron**: Cross-platform desktop apps with web technologies
-- **Monaco Editor**: The code editor that powers VS Code
-- **Material Design**: UI design principles and components
-- **VS Code**: Inspiration for editor interface and features
+For issues and questions:
+1. Check the troubleshooting section
+2. Review the API documentation
+3. Open an issue in the repository
+
+## Changelog
+
+### v1.0.0
+- Initial release
+- Code generation with multiple languages
+- Web search integration
+- Step-by-step reasoning
+- Real-time API status monitoring
+- File save functionality
+- Modern, responsive UI
