@@ -1,335 +1,55 @@
 """
-Autonomous AI Agent API - Clean Working Version
-Vercel-compatible Python serverless function
-DEPLOYMENT TIMESTAMP: 2025-08-22T15:15:00Z - FORCE FRESH DEPLOYMENT
+Minimal Test API - Debugging POST issues
 """
 
 from http.server import BaseHTTPRequestHandler
 import json
 from datetime import datetime
-from urllib.parse import urlparse
-
-# Configuration
-SECRET_KEY = "autonomous-ai-agent-secret-key-2024"
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        """Handle GET requests"""
-        try:
-            parsed_path = urlparse(self.path)
-            path = parsed_path.path
-            
-            if path == '/':
-                response = {
-                    "message": "Autonomous AI Agent API - Clean Version",
-                    "status": "active",
-                    "version": "2.0.0",
-                    "features": ["code_generation", "web_search", "reasoning", "authentication"],
-                    "timestamp": datetime.now().isoformat()
-                }
-            elif path == '/health':
-                response = {
-                    "status": "healthy",
-                    "timestamp": datetime.now().isoformat()
-                }
-            elif path == '/status':
-                # Check authentication for status endpoint
-                auth_header = self.headers.get('Authorization')
-                if not auth_header or not self._verify_token(auth_header):
-                    self.send_response(401)
-                    self.send_header('Content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
-                    return
-                
-                response = {
-                    "api_status": "active",
-                    "available_features": ["code_generation", "web_search", "reasoning"],
-                    "deployment_mode": "clean",
-                    "progressive_enhancement": False,
-                    "timestamp": datetime.now().isoformat()
-                }
-            else:
-                response = {"error": "Endpoint not found"}
-            
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-            self.end_headers()
-            
-            self.wfile.write(json.dumps(response).encode())
-            
-        except Exception as e:
-            self.send_response(500)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+        """Simple GET endpoint"""
+        response = {
+            "message": "Minimal Test API",
+            "status": "working",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(response).encode())
     
     def do_POST(self):
-        """Handle POST requests"""
+        """Simple POST endpoint"""
         try:
-            parsed_path = urlparse(self.path)
-            path = parsed_path.path
-            
-            # Check authentication for all POST endpoints
-            auth_header = self.headers.get('Authorization')
-            if not auth_header or not self._verify_token(auth_header):
-                self.send_response(401)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
-                return
-            
-            # Read request body with better error handling
-            try:
-                content_length = int(self.headers.get('Content-Length', 0))
-                if content_length <= 0:
-                    self.send_response(400)
-                    self.send_header('Content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": "Empty request body"}).encode())
-                    return
-                
+            # Read request body
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 0:
                 post_data = self.rfile.read(content_length)
                 request_data = json.loads(post_data.decode('utf-8'))
-            except ValueError as e:
-                self.send_response(400)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": f"Invalid Content-Length: {str(e)}"}).encode())
-                return
-            except json.JSONDecodeError as e:
-                self.send_response(400)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": f"Invalid JSON: {str(e)}"}).encode())
-                return
-            
-            # Route to appropriate handler
-            if path == '/generate':
-                response = self._handle_code_generation(request_data)
-            elif path == '/search':
-                response = self._handle_search(request_data)
-            elif path == '/reason':
-                response = self._handle_reasoning(request_data)
-            elif path == '/train':
-                response = self._handle_training(request_data)
             else:
-                response = {"error": "Endpoint not found"}
+                request_data = {}
+            
+            # Simple response
+            response = {
+                "message": "POST request received",
+                "data": request_data,
+                "timestamp": datetime.now().isoformat()
+            }
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             self.end_headers()
-            
             self.wfile.write(json.dumps(response).encode())
             
         except Exception as e:
-            # Better error logging
             error_response = {
-                "error": "Internal server error",
+                "error": "POST failed",
                 "details": str(e),
-                "path": self.path,
                 "timestamp": datetime.now().isoformat()
             }
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(error_response).encode())
-    
-    def do_OPTIONS(self):
-        """Handle CORS preflight requests"""
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        self.end_headers()
-    
-    def _verify_token(self, auth_header):
-        """Verify token (simplified version without JWT)"""
-        try:
-            if not auth_header.startswith('Bearer '):
-                return False
-            
-            token = auth_header.split(' ')[1]
-            # Simple token validation for now
-            return token == SECRET_KEY
-        except:
-            return False
-    
-    def _handle_code_generation(self, request_data):
-        """Handle code generation requests"""
-        prompt = request_data.get('prompt', '')
-        language = request_data.get('language', 'python')
-        
-        # Simple template-based code generation
-        if "fibonacci" in prompt.lower():
-            if language == "python":
-                code = """def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
-
-# Example usage
-print(fibonacci(10))"""
-            else:
-                code = """function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n-1) + fibonacci(n-2);
-}
-
-console.log(fibonacci(10));"""
-        elif "sort" in prompt.lower():
-            if language == "python":
-                code = f"""# {prompt}
-
-def custom_sort(arr):
-    return sorted(arr)
-
-# Example usage
-arr = [64, 34, 25, 12, 22, 11, 90]
-sorted_arr = custom_sort(arr)
-print(f"Original: {{arr}}")
-print(f"Sorted: {{sorted_arr}}")"""
-            else:
-                code = f"// {prompt}\n// Custom sorting implementation"
-        else:
-            if language == "python":
-                code = f"""# {prompt}
-
-def solve_problem():
-    # TODO: Implement your solution here
-    pass
-
-if __name__ == "__main__":
-    solve_problem()"""
-            else:
-                code = f"// {prompt}\n// TODO: Implement solution in {language}"
-        
-        return {
-            "code": code,
-            "explanation": f"Generated {language} code for: {prompt}",
-            "confidence": 0.8,
-            "method": "template_generation",
-            "timestamp": datetime.now().isoformat()
-        }
-    
-    def _handle_search(self, request_data):
-        """Handle search requests"""
-        query = request_data.get('query', '')
-        depth = request_data.get('depth', 5)
-        
-        # Mock search results
-        mock_results = [
-            {
-                "title": f"Search Result for: {query}",
-                "snippet": f"This is a comprehensive result about {query} with detailed information and examples.",
-                "url": f"https://example.com/search?q={query}",
-                "type": "mock_result"
-            },
-            {
-                "title": f"Related Information: {query}",
-                "snippet": f"Additional context and background information about {query} to help you understand the topic better.",
-                "url": f"https://example.com/related/{query}",
-                "type": "related"
-            }
-        ]
-        
-        # Limit results based on depth
-        results = mock_results[:min(depth, len(mock_results))]
-        
-        synthesized = f"Found {len(results)} results for '{query}'. This is a mock search response."
-        
-        return {
-            "results": results,
-            "synthesized_answer": synthesized,
-            "confidence": 0.8,
-            "method": "mock_search",
-            "query": query,
-            "result_count": len(results),
-            "timestamp": datetime.now().isoformat()
-        }
-    
-    def _handle_reasoning(self, request_data):
-        """Handle reasoning requests"""
-        problem = request_data.get('problem', '')
-        domain = request_data.get('domain', 'coding')
-        include_math = request_data.get('include_math', True)
-        
-        reasoning_steps = [
-            {
-                "step": 1,
-                "description": "Problem Analysis",
-                "content": f"Analyzing the {domain} problem: {problem}"
-            },
-            {
-                "step": 2,
-                "description": "Solution Planning", 
-                "content": "Breaking down the problem into manageable components"
-            },
-            {
-                "step": 3,
-                "description": "Implementation Strategy",
-                "content": f"Determining approach for this {domain} challenge"
-            }
-        ]
-        
-        if include_math and domain == "coding":
-            reasoning_steps.append({
-                "step": 4,
-                "description": "Mathematical Analysis",
-                "content": "Analyzing time and space complexity, mathematical properties"
-            })
-        
-        # Generate comprehensive solution
-        solution = f"""
-Comprehensive approach for: {problem}
-
-1. Understand the requirements
-   - Analyze input/output specifications
-   - Identify edge cases and constraints
-   
-2. Design the solution
-   - Choose appropriate data structures
-   - Plan algorithm steps
-   
-3. Implement step by step
-   - Write clean, readable code
-   - Add proper error handling
-   
-4. Test and validate
-   - Test with various inputs
-   - Verify edge cases
-   
-5. Optimize if needed
-   - Analyze time/space complexity
-   - Look for improvement opportunities
-
-This {domain} problem requires systematic analysis and careful implementation.
-"""
-        
-        return {
-            "reasoning_steps": reasoning_steps,
-            "solution": solution.strip(),
-            "confidence": 0.8,
-            "method": "basic_reasoning",
-            "domain": domain,
-            "mathematical_analysis": include_math,
-            "timestamp": datetime.now().isoformat()
-        }
-    
-    def _handle_training(self, request_data):
-        """Handle training requests"""
-        training_type = request_data.get('type', 'general')
-        
-        return {
-            "message": "Training endpoint activated",
-            "training_type": training_type,
-            "status": "ready",
-            "note": "Training capabilities are available for model improvement",
-            "timestamp": datetime.now().isoformat()
-        }
